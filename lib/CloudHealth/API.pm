@@ -134,6 +134,58 @@ package CloudHealth::API::Call::ListReportsOfSpecificType;
   has _method => (is => 'ro', isa => 'Str', default => 'GET');
   has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/olap_reports/:report-type');
 
+package CloudHealth::API::Call::ListOfQueryableAssets;
+  use Moose;
+  use MooseX::StrictConstructor;
+
+  has _parameters => (is => 'ro', default => sub { [ ] });
+  has _url_params => (is => 'ro', default => sub { [ ] });
+
+  has _method => (is => 'ro', isa => 'Str', default => 'GET');
+  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/api');
+
+package CloudHealth::API::Call::AttributesOfSingleAsset;
+  use Moose;
+  use MooseX::StrictConstructor;
+
+  has asset => (is => 'ro', isa => 'Str', required => 1);
+
+  has _parameters => (is => 'ro', default => sub { [ ] });
+  has _url_params => (is => 'ro', default => sub { [ 
+    { name => 'asset' }
+  ] });
+
+  has _method => (is => 'ro', isa => 'Str', default => 'GET');
+  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/api/:asset');
+
+package CloudHealth::API::Call::SearchForAssets;
+  use Moose;
+  use MooseX::StrictConstructor;
+
+  has name => (is => 'ro', isa => 'Str', required => 1);
+  has query => (is => 'ro', isa => 'Str', required => 1);
+  has include => (is => 'ro', isa => 'Str');
+  has api_version => (is => 'ro', isa => 'Int', default => 2);
+  has fields => (is => 'ro', isa => 'Str');
+  has page => (is => 'ro', isa => 'Int');
+  has per_page => (is => 'ro', isa => 'Int');
+  has is_active => (is => 'ro', isa => 'Bool');
+
+  has _parameters => (is => 'ro', default => sub { [
+    { name => 'name' },
+    { name => 'query' },
+    { name => 'include' },  
+    { name => 'api_version' },  
+    { name => 'fields' },  
+    { name => 'page' },  
+    { name => 'per_page' },  
+    { name => 'is_active' },  
+  ] });
+  has _url_params => (is => 'ro', default => sub { [ ] });
+
+  has _method => (is => 'ro', isa => 'Str', default => 'GET');
+  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/api/search');
+
 package CloudHealth::API::Caller;
   use Moose;
   use HTTP::Tiny;
@@ -263,6 +315,27 @@ package CloudHealth::API;
   sub ListReportsOfSpecificType {
     my ($self, @params) = @_;
     my $req = $self->call_former->params2request('ListReportsOfSpecificType', $self->credentials, @params);
+    my $result = $self->io->call($req);
+    return $self->result_parser->result2return($result);
+  }
+
+  sub ListOfQueryableAssets {
+    my ($self, @params) = @_;
+    my $req = $self->call_former->params2request('ListOfQueryableAssets', $self->credentials, @params);
+    my $result = $self->io->call($req);
+    return $self->result_parser->result2return($result);
+  }
+
+  sub AttributesOfSingleAsset {
+    my ($self, @params) = @_;
+    my $req = $self->call_former->params2request('AttributesOfSingleAsset', $self->credentials, @params);
+    my $result = $self->io->call($req);
+    return $self->result_parser->result2return($result);
+  }
+
+  sub SearchForAssets {
+    my ($self, @params) = @_;
+    my $req = $self->call_former->params2request('SearchForAssets', $self->credentials, @params);
     my $result = $self->io->call($req);
     return $self->result_parser->result2return($result);
   }
