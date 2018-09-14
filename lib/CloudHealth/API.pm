@@ -45,12 +45,32 @@ package CloudHealth::API::CallObjectFormer;
     my $params = {
       api_key => $creds->api_key,
     };
+    foreach my $param (@{ $call_object->_parameters }) {
+      my $key = $param->{ name };
+      my $value = $call_object->$key;
+      next if (not defined $value);
+
+      my $location = defined $param->{ location } ? $param->{ location } : $key;
+      $params->{ $location } = $value;
+    }
+
+    my $url_params = {};
+    foreach my $param (@{ $call_object->_url_params }) {
+      my $key = $param->{ name };
+      my $value = $call_object->$key;
+      next if (not defined $value);
+
+      my $location = defined $param->{ location } ? $param->{ location } : $key;
+      $url_params->{ $location } = $value;
+    }
+    my $url = $call_object->_url;
+    $url =~ s/\:([a-z0-9_-]+)/$url_params->{ $1 }/ge;
 
     my $qstring = HTTP::Tiny->www_form_urlencode($params);
     my $req = CloudHealth::Net::HTTPRequest->new;
     $req->method($call_object->_method);
     $req->url(
-      $call_object->_url . "?$qstring",
+      "$url?$qstring",
     );
     $req->headers({
       Accept => 'application/json',
@@ -65,8 +85,30 @@ package CloudHealth::API::Call::RetrieveAllPerspectives;
 
   has active_only => (is => 'ro', isa => 'Bool');
 
+  has _parameters => (is => 'ro', default => sub { [ 
+    { name => 'active_only' }
+  ] });
+  has _url_params => (is => 'ro', default => sub { [ ] });
+
   has _method => (is => 'ro', isa => 'Str', default => 'GET');
   has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/v1/perspective_schemas');
+
+package CloudHealth::API::Call::RetrievePerspectiveSchema;
+  use Moose;
+  use MooseX::StrictConstructor;
+
+  has include_version => (is => 'ro', isa => 'Bool');
+  has perspective_id => (is => 'ro', isa => 'Str', required => 1);
+
+  has _parameters => (is => 'ro', default => sub { [ 
+    { name => 'include_version' },
+  ] });
+  has _url_params => (is => 'ro', default => sub { [ 
+    { name => 'perspective_id', location => 'perspective-id' }
+  ] });
+
+  has _method => (is => 'ro', isa => 'Str', default => 'GET');
+  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id');
 
 package CloudHealth::API::Caller;
   use Moose;
@@ -176,6 +218,13 @@ package CloudHealth::API;
   sub RetrieveAllPerspectives {
     my ($self, @params) = @_;
     my $req = $self->call_former->params2request('RetrieveAllPerspectives', $self->credentials, @params);
+    my $result = $self->io->call($req);
+    return $self->result_parser->result2return($result);
+  }
+
+  sub RetrievePerspectiveSchema {
+    my ($self, @params) = @_;
+    my $req = $self->call_former->params2request('RetrievePerspectiveSchema', $self->credentials, @params);
     my $result = $self->io->call($req);
     return $self->result_parser->result2return($result);
   }
