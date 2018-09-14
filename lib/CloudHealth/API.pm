@@ -110,6 +110,30 @@ package CloudHealth::API::Call::RetrievePerspectiveSchema;
   has _method => (is => 'ro', isa => 'Str', default => 'GET');
   has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id');
 
+package CloudHealth::API::Call::ListQueryableReports;
+  use Moose;
+  use MooseX::StrictConstructor;
+
+  has _parameters => (is => 'ro', default => sub { [ ] });
+  has _url_params => (is => 'ro', default => sub { [ ] });
+
+  has _method => (is => 'ro', isa => 'Str', default => 'GET');
+  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/olap_reports');
+
+package CloudHealth::API::Call::ListReportsOfSpecificType;
+  use Moose;
+  use MooseX::StrictConstructor;
+
+  has type => (is => 'ro', isa => 'Str', required => 1);
+
+  has _parameters => (is => 'ro', default => sub { [ ] });
+  has _url_params => (is => 'ro', default => sub { [
+    { name => 'type', location => 'report-type' }    
+  ] });
+
+  has _method => (is => 'ro', isa => 'Str', default => 'GET');
+  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/olap_reports/:report-type');
+
 package CloudHealth::API::Caller;
   use Moose;
   use HTTP::Tiny;
@@ -228,4 +252,19 @@ package CloudHealth::API;
     my $result = $self->io->call($req);
     return $self->result_parser->result2return($result);
   }
+
+  sub ListQueryableReports {
+    my ($self, @params) = @_;
+    my $req = $self->call_former->params2request('ListQueryableReports', $self->credentials, @params);
+    my $result = $self->io->call($req);
+    return $self->result_parser->result2return($result);
+  }
+
+  sub ListReportsOfSpecificType {
+    my ($self, @params) = @_;
+    my $req = $self->call_former->params2request('ListReportsOfSpecificType', $self->credentials, @params);
+    my $result = $self->io->call($req);
+    return $self->result_parser->result2return($result);
+  }
+
 1;
