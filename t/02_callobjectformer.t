@@ -16,7 +16,9 @@ my $former = CloudHealth::API::CallObjectFormer->new;
 {
   throws_ok(sub {
     $former->params2request('RetrievePerspectiveSchema', $creds);
-  }, 'Moose::Exception::AttributeIsRequired', 'RetrievePerspectiveSchema call perspective_id parameter is required');
+  }, 'CloudHealth::API::Error', 'RetrievePerspectiveSchema call perspective_id parameter is required');
+  cmp_ok($@->message, 'eq', 'Error in parameters to method RetrievePerspectiveSchema');
+  like($@->detail, qr/Missing required arguments/);
 }
 
 {
@@ -33,7 +35,9 @@ my $former = CloudHealth::API::CallObjectFormer->new;
 {
   throws_ok(sub {
     $former->params2request('RetrievePerspectiveSchema', $creds, perspective_id => 'x', unexistant => 'value');
-  }, qr/Found unknown attribute/, 'RetrievePerspectiveSchema doesn\'t have that parameter');
+  }, 'CloudHealth::API::Error', 'RetrievePerspectiveSchema doesn\'t have that parameter');
+  cmp_ok($@->message, 'eq', 'Error in parameters to method RetrievePerspectiveSchema');
+  like($@->detail, qr/Found unknown attribute/);
 }
 
 {
@@ -45,6 +49,5 @@ my $former = CloudHealth::API::CallObjectFormer->new;
   my $req = $former->params2request('SearchForAssets', $creds, api_version => 1, name => 'fake', query => 'fake');
   like($req->url, qr/api_version=1/, 'found overwritten api_version in the params');
 }
-
 
 done_testing;
