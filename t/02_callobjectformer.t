@@ -36,4 +36,15 @@ my $former = CloudHealth::API::CallObjectFormer->new;
   }, qr/Found unknown attribute/, 'RetrievePerspectiveSchema doesn\'t have that parameter');
 }
 
+{
+  my $req = $former->params2request('SearchForAssets', $creds, name => 'fake', query => 'fake');
+  like($req->url, qr/api_version=2/, 'found default api_version in the params');
+}
+
+{
+  my $req = $former->params2request('SearchForAssets', $creds, api_version => 1, name => 'fake', query => 'fake');
+  like($req->url, qr/api_version=1/, 'found overwritten api_version in the params');
+}
+
+
 done_testing;
