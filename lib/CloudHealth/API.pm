@@ -350,6 +350,13 @@ package CloudHealth::API;
     return $self->result_parser->result2return($result);
   }
 
+  sub EnableAWSAccount {}
+  sub AWSAccounts {}
+  sub SingleAWSAccount {}
+  sub UpdateExistingAWSAccount {}
+  sub DeleteAWSAccount {}
+  sub GetExternalID {}
+
   sub RetrieveAllPerspectives {
     my $self = shift;
     $self->_invoke('RetrieveAllPerspectives', [ @_ ]);
@@ -360,6 +367,10 @@ package CloudHealth::API;
     $self->_invoke('RetrievePerspectiveSchema', [ @_ ]);
   }
 
+  sub CreatePerspectiveSchema {}
+  sub UpdatePerspectiveSchema {}
+  sub DeletePerspectiveSchema {}
+
   sub ListQueryableReports {
     my $self = shift;
     $self->_invoke('ListQueryableReports', [ @_ ]);
@@ -369,6 +380,10 @@ package CloudHealth::API;
     my $self = shift;
     $self->_invoke('ListReportsOfSpecificType', [ @_ ]);
   }
+
+  sub DataForStandardReport {}
+  sub DataForCustomReport {}
+  sub ReportDimensionsAndMeasures {}
 
   sub ListOfQueryableAssets {
     my $self = shift;
@@ -390,9 +405,33 @@ package CloudHealth::API;
     $self->_invoke('MetricsForSingleAsset', [ @_ ]);
   }
 
+  sub UploadMetricsForSingleAsset {}
+
   sub UpdateTagsForSingleAsset {
     my $self = shift;
     $self->_invoke('UpdateTagsForSingleAsset', [ @_ ]);
   }
+
+  sub SpecificCustomerReport {}
+  sub AssetsForSpecificCustomer {}
+  sub CreatePartnerCustomer {}
+  sub ModifyExistingCustomer {}
+  sub DeleteExistingCustomer {}
+  sub GetSingleCustomer {}
+  sub GetAllCustomers {}
+  sub StatementForSingleCustomer {}
+  sub StatementsForAllCustomers {}
+
+  sub ConnectGovCloudCommercialAccountToGovCloudAssetAccount {}
+  sub ListAllGovCloudLinkagesOwnedByCurrentCustomer {}
+  sub DetailsOfSingleGovCloudLinkage {}
+  sub UpdateSingleGovCloudLinkage {}
+  sub UnderstandFormatOfGovCloudLinkagePayload {}
+  
+  sub CreateAWSAccountAssignment {}
+  sub ReadAllAWSAccountAssignments {}
+  sub ReadSingleAWSAccountAssignment {}
+  sub UpdateAWSAccountAssignment {}
+  sub DeleteAWSAccountAssignment {}
 
 1;
