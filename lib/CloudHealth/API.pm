@@ -1,9 +1,10 @@
 package CloudHealth::API::Error;
-  use Moose;
+  use Moo;
+  use Types::Standard qw/Str Int/;
   extends 'Throwable::Error';
 
-  has status => (is => 'ro', isa => 'Int', required => 1);
-  has detail => (is => 'ro', isa => 'Str');
+  has status => (is => 'ro', isa => Int, required => 1);
+  has detail => (is => 'ro', isa => Str);
 
   sub as_string {
     my $self = shift;
@@ -15,26 +16,29 @@ package CloudHealth::API::Error;
   }
 
 package CloudHealth::API::Credentials;
-  use Moose;
+  use Moo;
+  use Types::Standard qw/Str/;
 
-  has api_key => (is => 'ro', isa => 'Str', required => 1);
+  has api_key => (is => 'ro', isa => Str, required => 1);
 
 package CloudHealth::Net::HTTPRequest;
-  use Moose;
+  use Moo;
+  use Types::Standard qw/Str HashRef/;
 
-  has method => (is => 'rw', isa => 'Str');
-  has url => (is => 'rw', isa => 'Str');
-  has headers => (is => 'rw', isa => 'HashRef');
-  has parameters => (is => 'rw', isa => 'HashRef');
+  has method => (is => 'rw', isa => Str);
+  has url => (is => 'rw', isa => Str);
+  has headers => (is => 'rw', isa => HashRef);
+  has parameters => (is => 'rw', isa => HashRef);
 
 package CloudHealth::Net::HTTPResponse;
-  use Moose;
+  use Moo;
+  use Types::Standard qw/Str Int/;
 
-  has content => (is => 'ro', isa => 'Str');
-  has status => (is => 'ro', isa => 'Int');
+  has content => (is => 'ro', isa => Str);
+  has status => (is => 'ro', isa => Int);
 
 package CloudHealth::API::CallObjectFormer;
-  use Moose;
+  use Moo;
   use HTTP::Tiny;
 
   sub params2request {
@@ -80,10 +84,11 @@ package CloudHealth::API::CallObjectFormer;
   }
 
 package CloudHealth::API::Call::RetrieveAllPerspectives;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
-  has active_only => (is => 'ro', isa => 'Bool');
+  has active_only => (is => 'ro', isa => Bool);
 
   sub _parameters { [ 
     { name => 'active_only' }
@@ -93,11 +98,12 @@ package CloudHealth::API::Call::RetrieveAllPerspectives;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas' }
 
 package CloudHealth::API::Call::RetrievePerspectiveSchema;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
-  has include_version => (is => 'ro', isa => 'Bool');
-  has perspective_id => (is => 'ro', isa => 'Str', required => 1);
+  has include_version => (is => 'ro', isa => Bool);
+  has perspective_id => (is => 'ro', isa => Str, required => 1);
 
   sub _parameters { [ 
     { name => 'include_version' },
@@ -109,8 +115,9 @@ package CloudHealth::API::Call::RetrievePerspectiveSchema;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
 
 package CloudHealth::API::Call::ListQueryableReports;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
   sub _parameters { [ ] }
   sub _url_params { [ ] }
@@ -118,10 +125,11 @@ package CloudHealth::API::Call::ListQueryableReports;
   sub _url { 'https://chapi.cloudhealthtech.com/olap_reports' }
 
 package CloudHealth::API::Call::ListReportsOfSpecificType;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
-  has type => (is => 'ro', isa => 'Str', required => 1);
+  has type => (is => 'ro', isa => Str, required => 1);
 
   sub _parameters { [ ] }
   sub _url_params { [
@@ -131,8 +139,9 @@ package CloudHealth::API::Call::ListReportsOfSpecificType;
   sub _url { 'https://chapi.cloudhealthtech.com/olap_reports/:report-type' }
 
 package CloudHealth::API::Call::ListOfQueryableAssets;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
   sub _parameters { [ ] }
   sub _url_params { [ ] }
@@ -140,10 +149,11 @@ package CloudHealth::API::Call::ListOfQueryableAssets;
   sub _url { 'https://chapi.cloudhealthtech.com/api' }
 
 package CloudHealth::API::Call::AttributesOfSingleAsset;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
-  has asset => (is => 'ro', isa => 'Str', required => 1);
+  has asset => (is => 'ro', isa => Str, required => 1);
 
   sub _parameters { [ ] }
   sub _url_params { [ 
@@ -153,17 +163,18 @@ package CloudHealth::API::Call::AttributesOfSingleAsset;
   sub _url { 'https://chapi.cloudhealthtech.com/api/:asset' }
 
 package CloudHealth::API::Call::SearchForAssets;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
-  has name => (is => 'ro', isa => 'Str', required => 1);
-  has query => (is => 'ro', isa => 'Str', required => 1);
-  has include => (is => 'ro', isa => 'Str');
-  has api_version => (is => 'ro', isa => 'Int', default => 2);
-  has fields => (is => 'ro', isa => 'Str');
-  has page => (is => 'ro', isa => 'Int');
-  has per_page => (is => 'ro', isa => 'Int');
-  has is_active => (is => 'ro', isa => 'Bool');
+  has name => (is => 'ro', isa => Str, required => 1);
+  has query => (is => 'ro', isa => Str, required => 1);
+  has include => (is => 'ro', isa => Str);
+  has api_version => (is => 'ro', isa => Int, default => 2);
+  has fields => (is => 'ro', isa => Str);
+  has page => (is => 'ro', isa => Int);
+  has per_page => (is => 'ro', isa => Int);
+  has is_active => (is => 'ro', isa => Bool);
 
   sub _parameters { [
     { name => 'name' },
@@ -180,16 +191,17 @@ package CloudHealth::API::Call::SearchForAssets;
   sub _url { 'https://chapi.cloudhealthtech.com/api/search' }
 
 package CloudHealth::API::Call::MetricsForSingleAsset;
-  use Moose;
-  use MooseX::StrictConstructor;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
 
-  has asset => (is => 'ro', isa => 'Str', required => 1);
-  has granularity => (is => 'ro', isa => 'Str');
-  has from => (is => 'ro', isa => 'Str');
-  has to => (is => 'ro', isa => 'Str');
-  has time_range => (is => 'ro', isa => 'Str');
-  has page => (is => 'ro', isa => 'Int');
-  has per_page => (is => 'ro', isa => 'Int');
+  has asset => (is => 'ro', isa => Str, required => 1);
+  has granularity => (is => 'ro', isa => Str);
+  has from => (is => 'ro', isa => Str);
+  has to => (is => 'ro', isa => Str);
+  has time_range => (is => 'ro', isa => Str);
+  has page => (is => 'ro', isa => Int);
+  has per_page => (is => 'ro', isa => Int);
 
   sub _parameters { [
     { name => 'asset' },
@@ -205,7 +217,7 @@ package CloudHealth::API::Call::MetricsForSingleAsset;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/metrics' }
 
 package CloudHealth::API::Caller;
-  use Moose;
+  use Moo;
   use HTTP::Tiny;
 
   has ua => (is => 'ro', default => sub { HTTP::Tiny->new });
@@ -228,7 +240,7 @@ package CloudHealth::API::Caller;
   }
 
 package CloudHealth::API::ResultParser;
-  use Moose;
+  use Moo;
   use JSON::MaybeXS;
 
   has parser => (is => 'ro', default => sub { JSON::MaybeXS->new });
@@ -296,16 +308,17 @@ package CloudHealth::API::ResultParser;
     )
   }
 package CloudHealth::API;
-  use Moose;
+  use Moo;
+  use Types::Standard qw/HasMethods/;
 
-  has call_former => (is => 'ro', isa => 'CloudHealth::API::CallObjectFormer', default => sub {
+  has call_former => (is => 'ro', isa => HasMethods['params2request'], default => sub {
     CloudHealth::API::CallObjectFormer->new;  
   });
-  has credentials => (is => 'ro', isa => 'CloudHealth::API::Credentials', required => 1);
-  has io => (is => 'ro', isa => 'CloudHealth::API::Caller', default => sub {
+  has credentials => (is => 'ro', isa => HasMethods['api_key'], required => 1);
+  has io => (is => 'ro', isa => HasMethods['call'], default => sub {
     CloudHealth::API::Caller->new;  
   });
-  has result_parser => (is => 'ro', isa => 'CloudHealth::API::ResultParser', default => sub {
+  has result_parser => (is => 'ro', isa => HasMethods['result2return'], default => sub {
     CloudHealth::API::ResultParser->new
   });
 
