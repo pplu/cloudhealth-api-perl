@@ -243,6 +243,19 @@ package CloudHealth::API::Call::MetricsForSingleAsset;
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/metrics' }
 
+package CloudHealth::API::Call::UpdateTagsForSingleAsset;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/HashRef/;
+
+  has document => (is => 'ro', isa => HashRef, required => 1);
+
+  sub _parameters { [ ] }
+  sub _url_params { [ ] }
+  sub _method { 'POST' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/custom_tags' }
+
+
 package CloudHealth::API::Caller;
   use Moo;
   use HTTP::Tiny;
@@ -375,6 +388,11 @@ package CloudHealth::API;
   sub MetricsForSingleAsset {
     my $self = shift;
     $self->_invoke('MetricsForSingleAsset', [ @_ ]);
+  }
+
+  sub UpdateTagsForSingleAsset {
+    my $self = shift;
+    $self->_invoke('UpdateTagsForSingleAsset', [ @_ ]);
   }
 
 1;
