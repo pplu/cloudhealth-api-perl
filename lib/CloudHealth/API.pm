@@ -61,9 +61,9 @@ package CloudHealth::API::CallObjectFormer;
   use HTTP::Tiny;
 
   sub params2request {
-    my ($self, $call, $creds, @params) = @_;
+    my ($self, $call, $creds, $user_params) = @_;
 
-    my $call_object = eval { "CloudHealth::API::Call::$call"->new(@params) };
+    my $call_object = eval { "CloudHealth::API::Call::$call"->new(@$user_params) };
     if ($@) {
       my $msg = $@;
       CloudHealth::API::Error->throw(
@@ -349,60 +349,51 @@ package CloudHealth::API;
     CloudHealth::API::ResultParser->new
   });
 
-  sub RetrieveAllPerspectives {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('RetrieveAllPerspectives', $self->credentials, @params);
+  sub _invoke {
+    my ($self, $method, $params) = @_;
+    my $req = $self->call_former->params2request($method, $self->credentials, $params);
     my $result = $self->io->call($req);
     return $self->result_parser->result2return($result);
+  }
+
+  sub RetrieveAllPerspectives {
+    my $self = shift;
+    $self->_invoke('RetrieveAllPerspectives', [ @_ ]);
   }
 
   sub RetrievePerspectiveSchema {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('RetrievePerspectiveSchema', $self->credentials, @params);
-    my $result = $self->io->call($req);
-    return $self->result_parser->result2return($result);
+    my $self = shift;
+    $self->_invoke('RetrievePerspectiveSchema', [ @_ ]);
   }
 
   sub ListQueryableReports {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('ListQueryableReports', $self->credentials, @params);
-    my $result = $self->io->call($req);
-    return $self->result_parser->result2return($result);
+    my $self = shift;
+    $self->_invoke('ListQueryableReports', [ @_ ]);
   }
 
   sub ListReportsOfSpecificType {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('ListReportsOfSpecificType', $self->credentials, @params);
-    my $result = $self->io->call($req);
-    return $self->result_parser->result2return($result);
+    my $self = shift;
+    $self->_invoke('ListReportsOfSpecificType', [ @_ ]);
   }
 
   sub ListOfQueryableAssets {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('ListOfQueryableAssets', $self->credentials, @params);
-    my $result = $self->io->call($req);
-    return $self->result_parser->result2return($result);
+    my $self = shift;
+    $self->_invoke('ListOfQueryableAssets', [ @_ ]);
   }
 
   sub AttributesOfSingleAsset {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('AttributesOfSingleAsset', $self->credentials, @params);
-    my $result = $self->io->call($req);
-    return $self->result_parser->result2return($result);
+    my $self = shift;
+    $self->_invoke('AttributesOfSingleAsset', [ @_ ]);
   }
 
   sub SearchForAssets {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('SearchForAssets', $self->credentials, @params);
-    my $result = $self->io->call($req);
-    return $self->result_parser->result2return($result);
+    my $self = shift;
+    $self->_invoke('SearchForAssets', [ @_ ]);
   }
 
   sub MetricsForSingleAsset {
-    my ($self, @params) = @_;
-    my $req = $self->call_former->params2request('MetricsForSingleAsset', $self->credentials, @params);
-    my $result = $self->io->call($req);
-    return $self->result_parser->result2return($result);
+    my $self = shift;
+    $self->_invoke('MetricsForSingleAsset', [ @_ ]);
   }
 
 1;
