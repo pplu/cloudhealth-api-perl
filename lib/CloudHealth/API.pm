@@ -277,15 +277,6 @@ package CloudHealth::API::ResultParser;
 
     if ($response->status == 200) {
       return $self->process_response($response);
-    } elsif ($response->status == 401) {
-      # We don't let process_error process a 401 because it returns this content:
-      # {"error":""}
-      # which is not consistent with http://apidocs.cloudhealthtech.com/#documentation_error-codes
-      # so process_error will not return adequately
-      return CloudHealth::API::RemoteError->throw(
-        status => $response->status,
-        message => 'Unauthorized',
-      );
     } else {
       return $self->process_error($response);
     } 
@@ -320,18 +311,8 @@ package CloudHealth::API::ResultParser;
     ) if ($@);
 
     CloudHealth::API::RemoteError->throw(
-      type => 'UnparseableResponse',
-      message => 'Error from API doesn\'t meet docu requirements',
-      detail => $response->content,
-    ) if (
-         not defined $struct->{ error } 
-      or not defined $struct->{ message }
-      or $struct->{ error } != 1
-    );
-
-    CloudHealth::API::RemoteError->throw(
       status => $response->status,
-      message => $struct->{ message },
+      message => ($struct->{ error } // 'No message'),
     )
   }
 package CloudHealth::API;
