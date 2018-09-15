@@ -186,6 +186,32 @@ package CloudHealth::API::Call::SearchForAssets;
   has _method => (is => 'ro', isa => 'Str', default => 'GET');
   has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/api/search');
 
+package CloudHealth::API::Call::MetricsForSingleAsset;
+  use Moose;
+  use MooseX::StrictConstructor;
+
+  has asset => (is => 'ro', isa => 'Str', required => 1);
+  has granularity => (is => 'ro', isa => 'Str');
+  has from => (is => 'ro', isa => 'Str');
+  has to => (is => 'ro', isa => 'Str');
+  has time_range => (is => 'ro', isa => 'Str');
+  has page => (is => 'ro', isa => 'Int');
+  has per_page => (is => 'ro', isa => 'Int');
+
+  has _parameters => (is => 'ro', default => sub { [
+    { name => 'asset' },
+    { name => 'granularity' },
+    { name => 'from' },
+    { name => 'to' },
+    { name => 'time_range' },
+    { name => 'page' },
+    { name => 'per_page' },
+  ] });
+  has _url_params => (is => 'ro', default => sub { [ ] });
+
+  has _method => (is => 'ro', isa => 'Str', default => 'GET');
+  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/v1/metrics');
+
 package CloudHealth::API::Caller;
   use Moose;
   use HTTP::Tiny;
@@ -336,6 +362,13 @@ package CloudHealth::API;
   sub SearchForAssets {
     my ($self, @params) = @_;
     my $req = $self->call_former->params2request('SearchForAssets', $self->credentials, @params);
+    my $result = $self->io->call($req);
+    return $self->result_parser->result2return($result);
+  }
+
+  sub MetricsForSingleAsset {
+    my ($self, @params) = @_;
+    my $req = $self->call_former->params2request('MetricsForSingleAsset', $self->credentials, @params);
     my $result = $self->io->call($req);
     return $self->result_parser->result2return($result);
   }
