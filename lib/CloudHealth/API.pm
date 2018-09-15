@@ -1,19 +1,38 @@
 package CloudHealth::API::Error;
   use Moo;
-  use Types::Standard qw/Str Int/;
+  use Types::Standard qw/Str/;
   extends 'Throwable::Error';
 
-  has status => (is => 'ro', isa => Int, required => 1);
+  has type => (is => 'ro', isa => Str, required => 1);
   has detail => (is => 'ro', isa => Str);
+
+  sub header {
+    my $self = shift;
+    return sprintf "Exception with type: %s: %s", $self->type, $self->message;
+  }
 
   sub as_string {
     my $self = shift;
     if (defined $self->detail) {
-      return sprintf "Exception: %s on HTTP response %d.\nDetail: %s", $self->message, $self->status, $self->detail;
+      return sprintf "%s\nDetail: %s", $self->header, $self->detail;
     } else {
-      return sprintf "Exception: %s on HTTP response %d", $self->message, $self->status;
+      return $self->header;
     }
   }
+
+package CloudHealth::API::RemoteError;
+  use Moo;
+  use Types::Standard qw/Int/;
+  extends 'CloudHealth::API::Error';
+
+  has '+type' => (default => sub { 'Remote' });
+  has status => (is => 'ro', isa => Int, required => 1);
+
+  around header => sub {
+    my ($orig, $self) = @_;
+    my $orig_message = $self->$orig;
+    sprintf "%s with HTTP status %d", $orig_message, $self->status;
+  };
 
 package CloudHealth::API::Credentials;
   use Moo;
@@ -44,7 +63,15 @@ package CloudHealth::API::CallObjectFormer;
   sub params2request {
     my ($self, $call, $creds, @params) = @_;
 
-    my $call_object = "CloudHealth::API::Call::$call"->new(@params);
+    my $call_object = eval { "CloudHealth::API::Call::$call"->new(@params) };
+    if ($@) {
+      my $msg = $@;
+      CloudHealth::API::Error->throw(
+        type => 'InvalidParameters',
+        message => "Error in parameters to method $call",
+        detail => $msg,
+      );
+    }
 
     my $params = {
       api_key => $creds->api_key,
@@ -255,7 +282,7 @@ package CloudHealth::API::ResultParser;
       # {"error":""}
       # which is not consistent with http://apidocs.cloudhealthtech.com/#documentation_error-codes
       # so process_error will not return adequately
-      return CloudHealth::API::Error->throw(
+      return CloudHealth::API::RemoteError->throw(
         status => $response->status,
         message => 'Unauthorized',
       );
@@ -271,7 +298,7 @@ package CloudHealth::API::ResultParser;
       $self->parser->decode($response->content);
     };
     CloudHealth::API::Error->throw(
-      status => $response->status,
+      type => 'UnparseableResponse',
       message => 'Can\'t parse response ' . $response->content . ' with error ' . $@
     ) if ($@);
 
@@ -287,13 +314,13 @@ package CloudHealth::API::ResultParser;
     };
 
     CloudHealth::API::Error->throw(
-      status => $response->status,
+      type => 'UnparseableResponse',
       message => 'Can\'t parse JSON content',
       detail => $response->content,
     ) if ($@);
 
-    CloudHealth::API::Error->throw(
-      status => $response->status,
+    CloudHealth::API::RemoteError->throw(
+      type => 'UnparseableResponse',
       message => 'Error from API doesn\'t meet docu requirements',
       detail => $response->content,
     ) if (
@@ -302,7 +329,7 @@ package CloudHealth::API::ResultParser;
       or $struct->{ error } != 1
     );
 
-    CloudHealth::API::Error->throw(
+    CloudHealth::API::RemoteError->throw(
       status => $response->status,
       message => $struct->{ message },
     )
