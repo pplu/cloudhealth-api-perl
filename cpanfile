@@ -1,5 +1,6 @@
-requires 'Moose';
-requires 'MooseX::StrictConstructor';
+requires 'Moo';
+requires 'MooX::StrictConstructor';
+requires 'Type::Tiny';
 requires 'Throwable::Error';
 requires 'HTTP::Tiny';
 requires 'JSON::MaybeXS';
