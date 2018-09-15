@@ -85,13 +85,12 @@ package CloudHealth::API::Call::RetrieveAllPerspectives;
 
   has active_only => (is => 'ro', isa => 'Bool');
 
-  has _parameters => (is => 'ro', default => sub { [ 
+  sub _parameters { [ 
     { name => 'active_only' }
-  ] });
-  has _url_params => (is => 'ro', default => sub { [ ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/v1/perspective_schemas');
+  ] }
+  sub _url_params { [ ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas' }
 
 package CloudHealth::API::Call::RetrievePerspectiveSchema;
   use Moose;
@@ -100,25 +99,23 @@ package CloudHealth::API::Call::RetrievePerspectiveSchema;
   has include_version => (is => 'ro', isa => 'Bool');
   has perspective_id => (is => 'ro', isa => 'Str', required => 1);
 
-  has _parameters => (is => 'ro', default => sub { [ 
+  sub _parameters { [ 
     { name => 'include_version' },
-  ] });
-  has _url_params => (is => 'ro', default => sub { [ 
+  ] }
+  sub _url_params { [ 
     { name => 'perspective_id', location => 'perspective-id' }
-  ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id');
+  ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
 
 package CloudHealth::API::Call::ListQueryableReports;
   use Moose;
   use MooseX::StrictConstructor;
 
-  has _parameters => (is => 'ro', default => sub { [ ] });
-  has _url_params => (is => 'ro', default => sub { [ ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/olap_reports');
+  sub _parameters { [ ] }
+  sub _url_params { [ ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/olap_reports' }
 
 package CloudHealth::API::Call::ListReportsOfSpecificType;
   use Moose;
@@ -126,23 +123,21 @@ package CloudHealth::API::Call::ListReportsOfSpecificType;
 
   has type => (is => 'ro', isa => 'Str', required => 1);
 
-  has _parameters => (is => 'ro', default => sub { [ ] });
-  has _url_params => (is => 'ro', default => sub { [
+  sub _parameters { [ ] }
+  sub _url_params { [
     { name => 'type', location => 'report-type' }    
-  ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/olap_reports/:report-type');
+  ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/olap_reports/:report-type' }
 
 package CloudHealth::API::Call::ListOfQueryableAssets;
   use Moose;
   use MooseX::StrictConstructor;
 
-  has _parameters => (is => 'ro', default => sub { [ ] });
-  has _url_params => (is => 'ro', default => sub { [ ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/api');
+  sub _parameters { [ ] }
+  sub _url_params { [ ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/api' }
 
 package CloudHealth::API::Call::AttributesOfSingleAsset;
   use Moose;
@@ -150,13 +145,12 @@ package CloudHealth::API::Call::AttributesOfSingleAsset;
 
   has asset => (is => 'ro', isa => 'Str', required => 1);
 
-  has _parameters => (is => 'ro', default => sub { [ ] });
-  has _url_params => (is => 'ro', default => sub { [ 
+  sub _parameters { [ ] }
+  sub _url_params { [ 
     { name => 'asset' }
-  ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/api/:asset');
+  ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/api/:asset' }
 
 package CloudHealth::API::Call::SearchForAssets;
   use Moose;
@@ -171,7 +165,7 @@ package CloudHealth::API::Call::SearchForAssets;
   has per_page => (is => 'ro', isa => 'Int');
   has is_active => (is => 'ro', isa => 'Bool');
 
-  has _parameters => (is => 'ro', default => sub { [
+  sub _parameters { [
     { name => 'name' },
     { name => 'query' },
     { name => 'include' },  
@@ -180,11 +174,10 @@ package CloudHealth::API::Call::SearchForAssets;
     { name => 'page' },  
     { name => 'per_page' },  
     { name => 'is_active' },  
-  ] });
-  has _url_params => (is => 'ro', default => sub { [ ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/api/search');
+  ] }
+  sub _url_params { [ ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/api/search' }
 
 package CloudHealth::API::Call::MetricsForSingleAsset;
   use Moose;
@@ -198,7 +191,7 @@ package CloudHealth::API::Call::MetricsForSingleAsset;
   has page => (is => 'ro', isa => 'Int');
   has per_page => (is => 'ro', isa => 'Int');
 
-  has _parameters => (is => 'ro', default => sub { [
+  sub _parameters { [
     { name => 'asset' },
     { name => 'granularity' },
     { name => 'from' },
@@ -206,11 +199,10 @@ package CloudHealth::API::Call::MetricsForSingleAsset;
     { name => 'time_range' },
     { name => 'page' },
     { name => 'per_page' },
-  ] });
-  has _url_params => (is => 'ro', default => sub { [ ] });
-
-  has _method => (is => 'ro', isa => 'Str', default => 'GET');
-  has _url => (is => 'ro', isa => 'Str', default => 'https://chapi.cloudhealthtech.com/v1/metrics');
+  ] }
+  sub _url_params { [ ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/metrics' }
 
 package CloudHealth::API::Caller;
   use Moose;
