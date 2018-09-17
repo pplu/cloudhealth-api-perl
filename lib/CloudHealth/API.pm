@@ -53,6 +53,7 @@ package CloudHealth::Net::HTTPRequest;
   has url => (is => 'rw', isa => Str);
   has headers => (is => 'rw', isa => HashRef);
   has parameters => (is => 'rw', isa => HashRef);
+  has content => (is => 'rw', isa => Str);
 
 package CloudHealth::Net::HTTPResponse;
   use Moo;
@@ -64,6 +65,9 @@ package CloudHealth::Net::HTTPResponse;
 package CloudHealth::API::CallObjectFormer;
   use Moo;
   use HTTP::Tiny;
+  use JSON::MaybeXS;
+
+  has _json => (is => 'ro', default => sub { JSON::MaybeXS->new });
 
   sub params2request {
     my ($self, $call, $creds, $user_params) = @_;
@@ -78,6 +82,19 @@ package CloudHealth::API::CallObjectFormer;
       );
     }
 
+    my $body_struct;
+    if ($call_object->can('_body_params')) {
+      $body_struct = {};
+      foreach my $param (@{ $call_object->_body_params }) {
+        my $key = $param->{ name };
+        my $value = $call_object->$key;
+        next if (not defined $value);
+
+        my $location = defined $param->{ location } ? $param->{ location } : $key;
+        $body_struct->{ $location } = $value;
+      }
+    }
+    
     my $params = {
       api_key => $creds->api_key,
     };
@@ -111,9 +128,69 @@ package CloudHealth::API::CallObjectFormer;
     $req->headers({
       Accept => 'application/json',
     });
+    $req->content($self->_json->encode($body_struct)) if (defined $body_struct);
 
     return $req;
   }
+package CloudHealth::API::Call::EnableAWSAccount;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool Dict Optional ArrayRef/;
+
+  has name => (is => 'ro', isa => Str);
+  has authentication => (
+    is => 'ro', required => 1,
+    isa => Dict[
+      protocol => Str,
+      access_key => Optional[Str],
+      secret_key => Optional[Str],
+      assume_role_arn => Optional[Str],
+      assume_role_external_id => Optional[Str],
+    ]
+  );
+  has billing => (is => 'ro', isa => Dict[bucket => Str]);
+  has cloudtrail => (
+    is => 'ro',
+    isa => Dict[
+      enabled => Bool,
+      bucket => Str,
+      prefix => Optional[Str]
+    ]
+  );
+  has aws_config => (
+    is => 'ro',
+    isa => Dict[
+      enabled => Bool,
+      bucket => Str,
+      prefix => Optional[Str]
+    ]
+  );
+  has cloudwatch => (
+    is => 'ro',
+    isa => Dict[enabled => Bool]
+  );
+  has tags => (
+    is => 'ro',
+    isa => ArrayRef[Dict[key => Str, value => Str]]
+  );
+  has hide_public_fields => (is => 'ro', isa => Bool);
+  has region => (is => 'ro', isa => Str);
+
+  sub _body_params { [
+    { name => 'name' },
+    { name => 'authentication' },
+    { name => 'billing' },
+    { name => 'cloudtrail' },
+    { name => 'aws_config' },
+    { name => 'cloudwatch' },
+    { name => 'tags' },
+    { name => 'hide_public_fields' },
+    { name => 'region' },
+  ] }
+  sub _parameters { [ ] }
+  sub _url_params { [ ] }
+  sub _method { 'POST' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts' }
 
 package CloudHealth::API::Call::RetrieveAllPerspectives;
   use Moo;
@@ -381,7 +458,10 @@ package CloudHealth::API;
     }
   }
 
-  sub EnableAWSAccount { die "TODO" }
+  sub EnableAWSAccount {
+    my $self = shift;
+    $self->_invoke('EnableAWSAccount', [ @_ ]);
+  }
   sub AWSAccounts { die "TODO" }
   sub SingleAWSAccount { die "TODO" }
   sub UpdateExistingAWSAccount { die "TODO" }

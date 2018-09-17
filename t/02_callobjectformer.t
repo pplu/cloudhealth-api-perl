@@ -53,4 +53,22 @@ my $former = CloudHealth::API::CallObjectFormer->new;
   like($req->url, qr/api_version=1/, 'found overwritten api_version in the params');
 }
 
+{
+  throws_ok(sub {
+    $former->params2request('EnableAWSAccount', $creds, [ name => 'test' ]);
+  }, 'CloudHealth::API::Error');
+  like($@->detail, qr/Missing required arguments: authentication/);
+}
+
+{
+  my $req = $former->params2request('EnableAWSAccount', $creds, [
+    name => 'test',
+    authentication => { protocol => 'assume_role' },
+    billing => { bucket => 'billing_bucket' },
+    tags => [ { key => 'tag1name', value => 'tag1value' } ]
+  ]);
+  cmp_ok($req->method, 'eq', 'POST');
+  like($req->content, qr|"name":"test"|);
+}
+
 done_testing;
