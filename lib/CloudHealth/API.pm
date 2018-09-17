@@ -118,7 +118,7 @@ package CloudHealth::API::CallObjectFormer;
     my $params = {
       api_key => $creds->api_key,
     };
-    foreach my $param (@{ $call_object->_parameters }) {
+    foreach my $param (@{ $call_object->_query_params }) {
       my $key = $param->{ name };
       my $value = $call_object->$key;
       next if (not defined $value);
@@ -208,7 +208,7 @@ package CloudHealth::API::Call::EnableAWSAccount;
     { name => 'hide_public_fields' },
     { name => 'region' },
   ] }
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [ ] }
   sub _method { 'POST' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts' }
@@ -221,7 +221,7 @@ package CloudHealth::API::Call::AWSAccounts;
   has page => (is => 'ro', isa => Int);
   has per_page => (is => 'ro', isa => Int);
 
-  sub _parameters { [
+  sub _query_params { [
     { name => 'page' },
     { name => 'per_page' },
   ] }
@@ -236,7 +236,7 @@ package CloudHealth::API::Call::SingleAWSAccount;
 
   has id => (is => 'ro', isa => Int, required => 1);
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [
     { name => 'id' },
   ] }
@@ -300,7 +300,7 @@ package CloudHealth::API::Call::UpdateExistingAWSAccount;
     { name => 'hide_public_fields' },
     { name => 'region' },
   ] }
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [
     { name => 'id' },
   ] }
@@ -315,7 +315,7 @@ package CloudHealth::API::Call::DeleteAWSAccount;
 
   has id => (is => 'ro', isa => Int, required => 1);
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [
     { name => 'id' },
   ] }
@@ -329,7 +329,7 @@ package CloudHealth::API::Call::GetExternalID;
 
   has id => (is => 'ro', isa => Str, required => 1);
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [  
     { name => 'id' }
   ] }
@@ -343,7 +343,7 @@ package CloudHealth::API::Call::RetrieveAllPerspectives;
 
   has active_only => (is => 'ro', isa => Bool);
 
-  sub _parameters { [ 
+  sub _query_params { [ 
     { name => 'active_only' }
   ] }
   sub _url_params { [ ] }
@@ -358,7 +358,7 @@ package CloudHealth::API::Call::RetrievePerspectiveSchema;
   has include_version => (is => 'ro', isa => Bool);
   has perspective_id => (is => 'ro', isa => Str, required => 1);
 
-  sub _parameters { [ 
+  sub _query_params { [ 
     { name => 'include_version' },
   ] }
   sub _url_params { [ 
@@ -372,7 +372,7 @@ package CloudHealth::API::Call::ListQueryableReports;
   use MooX::StrictConstructor;
   use Types::Standard qw/Str Int Bool/;
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/olap_reports' }
@@ -384,7 +384,7 @@ package CloudHealth::API::Call::ListReportsOfSpecificType;
 
   has type => (is => 'ro', isa => Str, required => 1);
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [
     { name => 'type', location => 'report-type' }    
   ] }
@@ -396,7 +396,7 @@ package CloudHealth::API::Call::ListOfQueryableAssets;
   use MooX::StrictConstructor;
   use Types::Standard qw/Str Int Bool/;
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/api' }
@@ -408,7 +408,7 @@ package CloudHealth::API::Call::AttributesOfSingleAsset;
 
   has asset => (is => 'ro', isa => Str, required => 1);
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [ 
     { name => 'asset' }
   ] }
@@ -429,7 +429,7 @@ package CloudHealth::API::Call::SearchForAssets;
   has per_page => (is => 'ro', isa => Int);
   has is_active => (is => 'ro', isa => Bool);
 
-  sub _parameters { [
+  sub _query_params { [
     { name => 'name' },
     { name => 'query' },
     { name => 'include' },  
@@ -456,7 +456,7 @@ package CloudHealth::API::Call::MetricsForSingleAsset;
   has page => (is => 'ro', isa => Int);
   has per_page => (is => 'ro', isa => Int);
 
-  sub _parameters { [
+  sub _query_params { [
     { name => 'asset' },
     { name => 'granularity' },
     { name => 'from' },
@@ -476,7 +476,7 @@ package CloudHealth::API::Call::UpdateTagsForSingleAsset;
 
   has document => (is => 'ro', isa => HashRef, required => 1);
 
-  sub _parameters { [ ] }
+  sub _query_params { [ ] }
   sub _url_params { [ ] }
   sub _method { 'POST' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/custom_tags' }
