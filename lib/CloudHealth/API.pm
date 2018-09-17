@@ -193,6 +193,37 @@ package CloudHealth::API::Call::EnableAWSAccount;
   sub _method { 'POST' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts' }
 
+package CloudHealth::API::Call::AWSAccounts;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Int/;
+
+  has page => (is => 'ro', isa => Int);
+  has per_page => (is => 'ro', isa => Int);
+
+  sub _parameters { [
+    { name => 'page' },
+    { name => 'per_page' },
+  ] }
+  sub _url_params { [ ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts' }
+
+package CloudHealth::API::Call::SingleAWSAccount;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Int/;
+
+  has id => (is => 'ro', isa => Int, required => 1);
+
+  sub _parameters { [ ] }
+  sub _url_params { [
+    { name => 'id' },
+  ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id' }
+
+
 package CloudHealth::API::Call::DeleteAWSAccount;
   use Moo;
   use MooX::StrictConstructor;
@@ -494,8 +525,14 @@ package CloudHealth::API;
     my $self = shift;
     $self->_invoke('EnableAWSAccount', [ @_ ]);
   }
-  sub AWSAccounts { die "TODO" }
-  sub SingleAWSAccount { die "TODO" }
+  sub AWSAccounts {
+    my $self = shift;
+    $self->_invoke('AWSAccounts', [ @_ ]);
+  }
+  sub SingleAWSAccount {
+    my $self = shift;
+    $self->_invoke('SingleAWSAccount', [ @_ ]);
+  }
   sub UpdateExistingAWSAccount { die "TODO" }
   sub DeleteAWSAccount {
     my $self = shift;
