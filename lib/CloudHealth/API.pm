@@ -302,6 +302,20 @@ package CloudHealth::API::Call::DeleteAWSAccount;
   sub _method { 'DELETE' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id' }
 
+package CloudHealth::API::Call::GetExternalID;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Str Int Bool/;
+
+  has id => (is => 'ro', isa => Str, required => 1);
+
+  sub _parameters { [ ] }
+  sub _url_params { [  
+    { name => 'id' }
+  ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id/generate_external_id' }
+
 package CloudHealth::API::Call::RetrieveAllPerspectives;
   use Moo;
   use MooX::StrictConstructor;
@@ -605,7 +619,10 @@ package CloudHealth::API;
     my $self = shift;
     $self->_invoke('DeleteAWSAccount', [ @_ ]);
   }
-  sub GetExternalID { die "TODO" }
+  sub GetExternalID {
+    my $self = shift;
+    $self->_invoke('GetExternalID', [ @_ ]); 
+  }
 
   sub RetrieveAllPerspectives {
     my $self = shift;
