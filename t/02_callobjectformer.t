@@ -14,6 +14,7 @@ my $former = CloudHealth::API::CallObjectFormer->new;
   my $req = $former->params2request('RetrieveAllPerspectives', $creds, []);
   like($req->url, qr|^https://chapi.cloudhealthtech.com/v1/perspective_schemas|, 'found correct url');
   like($req->url, qr/api_key=stub/, 'found api_key in the params of the url');
+  ok(not(defined $req->headers->{'Content-Type'}));
 }
 
 {
@@ -67,6 +68,7 @@ my $former = CloudHealth::API::CallObjectFormer->new;
     billing => { bucket => 'billing_bucket' },
     tags => [ { key => 'tag1name', value => 'tag1value' } ]
   ]);
+  cmp_ok($req->headers->{'Content-Type'}, 'eq', 'application/json');
   cmp_ok($req->method, 'eq', 'POST');
   like($req->content, qr|"name":"test"|);
 }

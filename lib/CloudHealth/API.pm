@@ -126,6 +126,7 @@ package CloudHealth::API::CallObjectFormer;
       "$url?$qstring",
     );
     $req->headers({
+      (defined $body_struct) ? ('Content-Type' => 'application/json') : (),
       Accept => 'application/json',
     });
     $req->content($self->_json->encode($body_struct)) if (defined $body_struct);
@@ -366,6 +367,7 @@ package CloudHealth::API::Caller;
       $req->url,
       {
         headers => $req->headers,
+        (defined $req->content) ? (content => $req->content) : (),
       }
     );
 

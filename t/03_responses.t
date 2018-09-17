@@ -84,6 +84,21 @@ my $res_processor = CloudHealth::API::ResultParser->new;
   cmp_ok($@->message, 'eq', 'No message');
 }
 
+{
+  throws_ok(sub{
+    $res_processor->result2return(
+      CloudHealth::Net::HTTPResponse->new(
+        status => 422,
+        content => '{"errors":["Name can\'t be blank"," access key can\'t be blank"," secret key can\'t be blank"]}'
+      )
+    );
+  }, 'CloudHealth::API::RemoteError');
+  cmp_ok($@->type, 'eq', 'Remote');
+  like($@->message, qr|Name can't be blank|);
+  like($@->message, qr|access key can't be blank|);
+  like($@->message, qr|secret key can't be blank|);
+}
+
 
 
 done_testing;
