@@ -79,10 +79,15 @@ package CloudHealth::API::CallObjectFormer;
 
   has _json => (is => 'ro', default => sub { JSON::MaybeXS->new });
 
+  sub callinfo_class {
+    my ($self, $call) = @_;
+    "CloudHealth::API::Call::$call"
+  }
+
   sub params2request {
     my ($self, $call, $creds, $user_params) = @_;
 
-    my $call_object = eval { "CloudHealth::API::Call::$call"->new(@$user_params) };
+    my $call_object = eval { $self->callinfo_class($call)->new(@$user_params) };
     if ($@) {
       my $msg = $@;
       CloudHealth::API::Error->throw(
