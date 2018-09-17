@@ -4,7 +4,7 @@ package CloudHealth::API::Error;
   extends 'Throwable::Error';
 
   has type => (is => 'ro', isa => Str, required => 1);
-  has detail => (is => 'ro', isa => Str);
+  has detail => (is => 'ro');
 
   sub header {
     my $self = shift;
