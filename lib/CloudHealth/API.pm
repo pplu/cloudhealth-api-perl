@@ -350,12 +350,12 @@ package CloudHealth::API;
     return $self->result_parser->result2return($result);
   }
 
-  sub EnableAWSAccount {}
-  sub AWSAccounts {}
-  sub SingleAWSAccount {}
-  sub UpdateExistingAWSAccount {}
-  sub DeleteAWSAccount {}
-  sub GetExternalID {}
+  sub EnableAWSAccount { die "TODO" }
+  sub AWSAccounts { die "TODO" }
+  sub SingleAWSAccount { die "TODO" }
+  sub UpdateExistingAWSAccount { die "TODO" }
+  sub DeleteAWSAccount { die "TODO" }
+  sub GetExternalID { die "TODO" }
 
   sub RetrieveAllPerspectives {
     my $self = shift;
@@ -367,9 +367,9 @@ package CloudHealth::API;
     $self->_invoke('RetrievePerspectiveSchema', [ @_ ]);
   }
 
-  sub CreatePerspectiveSchema {}
-  sub UpdatePerspectiveSchema {}
-  sub DeletePerspectiveSchema {}
+  sub CreatePerspectiveSchema { die "TODO" }
+  sub UpdatePerspectiveSchema { die "TODO" }
+  sub DeletePerspectiveSchema { die "TODO" }
 
   sub ListQueryableReports {
     my $self = shift;
@@ -381,9 +381,9 @@ package CloudHealth::API;
     $self->_invoke('ListReportsOfSpecificType', [ @_ ]);
   }
 
-  sub DataForStandardReport {}
-  sub DataForCustomReport {}
-  sub ReportDimensionsAndMeasures {}
+  sub DataForStandardReport { die "TODO" }
+  sub DataForCustomReport { die "TODO" }
+  sub ReportDimensionsAndMeasures { die "TODO" }
 
   sub ListOfQueryableAssets {
     my $self = shift;
@@ -405,33 +405,33 @@ package CloudHealth::API;
     $self->_invoke('MetricsForSingleAsset', [ @_ ]);
   }
 
-  sub UploadMetricsForSingleAsset {}
+  sub UploadMetricsForSingleAsset { die "TODO" }
 
   sub UpdateTagsForSingleAsset {
     my $self = shift;
     $self->_invoke('UpdateTagsForSingleAsset', [ @_ ]);
   }
 
-  sub SpecificCustomerReport {}
-  sub AssetsForSpecificCustomer {}
-  sub CreatePartnerCustomer {}
-  sub ModifyExistingCustomer {}
-  sub DeleteExistingCustomer {}
-  sub GetSingleCustomer {}
-  sub GetAllCustomers {}
-  sub StatementForSingleCustomer {}
-  sub StatementsForAllCustomers {}
+  sub SpecificCustomerReport { die "TODO" }
+  sub AssetsForSpecificCustomer { die "TODO" }
+  sub CreatePartnerCustomer { die "TODO" }
+  sub ModifyExistingCustomer { die "TODO" }
+  sub DeleteExistingCustomer { die "TODO" }
+  sub GetSingleCustomer { die "TODO" }
+  sub GetAllCustomers { die "TODO" }
+  sub StatementForSingleCustomer { die "TODO" }
+  sub StatementsForAllCustomers { die "TODO" }
 
-  sub ConnectGovCloudCommercialAccountToGovCloudAssetAccount {}
-  sub ListAllGovCloudLinkagesOwnedByCurrentCustomer {}
-  sub DetailsOfSingleGovCloudLinkage {}
-  sub UpdateSingleGovCloudLinkage {}
-  sub UnderstandFormatOfGovCloudLinkagePayload {}
+  sub ConnectGovCloudCommercialAccountToGovCloudAssetAccount { die "TODO" }
+  sub ListAllGovCloudLinkagesOwnedByCurrentCustomer { die "TODO" }
+  sub DetailsOfSingleGovCloudLinkage { die "TODO" }
+  sub UpdateSingleGovCloudLinkage { die "TODO" }
+  sub UnderstandFormatOfGovCloudLinkagePayload { die "TODO" }
   
-  sub CreateAWSAccountAssignment {}
-  sub ReadAllAWSAccountAssignments {}
-  sub ReadSingleAWSAccountAssignment {}
-  sub UpdateAWSAccountAssignment {}
-  sub DeleteAWSAccountAssignment {}
+  sub CreateAWSAccountAssignment { die "TODO" }
+  sub ReadAllAWSAccountAssignments { die "TODO" }
+  sub ReadSingleAWSAccountAssignment { die "TODO" }
+  sub UpdateAWSAccountAssignment { die "TODO" }
+  sub DeleteAWSAccountAssignment { die "TODO" }
 
 1;
