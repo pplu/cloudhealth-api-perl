@@ -36,13 +36,23 @@ package CloudHealth::API::RemoteError;
 
 package CloudHealth::API::Credentials;
   use Moo;
-  use Types::Standard qw/Str/;
+  use Types::Standard qw/Maybe Str Bool/;
 
   has api_key => (
     is => 'ro',
-    isa => Str,
+    isa => Maybe[Str],
     required => 1,
     default => sub { $ENV{ CLOUDHEALTH_APIKEY } }
+  );
+
+  has is_set => (
+    is => 'ro',
+    isa => Bool,
+    lazy => 1,
+    default => sub {
+      my $self = shift;
+      return defined $self->api_key
+    }
   );
 
 package CloudHealth::Net::HTTPRequest;
@@ -94,7 +104,12 @@ package CloudHealth::API::CallObjectFormer;
         $body_struct->{ $location } = $value;
       }
     }
-    
+
+    CloudHealth::API::Error->throw(
+      type => 'NoCredentials',
+      message => 'Cannot find credentials for the request'
+    ) if (not $creds->is_set);
+
     my $params = {
       api_key => $creds->api_key,
     };
