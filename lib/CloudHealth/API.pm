@@ -86,24 +86,37 @@ package CloudHealth::API::CallObjectFormer;
 
   sub params2request {
     my ($self, $call, $creds, $user_params) = @_;
+    $user_params = { @$user_params };
 
-    my $call_object = eval { $self->callinfo_class($call)->new(@$user_params) };
-    if ($@) {
-      my $msg = $@;
-      CloudHealth::API::Error->throw(
-        type => 'InvalidParameters',
-        message => "Error in parameters to method $call",
-        detail => $msg,
-      );
-    }
+    my $call_class = $self->callinfo_class($call);
+      #CloudHealth::API::Error->throw(
+      #  type => 'InvalidParameters',
+      #  message => "Error in parameters to method $call",
+      #  detail => $msg,
+      #);
 
     my $body_struct;
-    if ($call_object->can('_body_params')) {
+    if ($call_class->can('_body_params')) {
       $body_struct = {};
-      foreach my $param (@{ $call_object->_body_params }) {
+      foreach my $param (@{ $call_class->_body_params }) {
         my $key = $param->{ name };
-        my $value = $call_object->$key;
-        next if (not defined $value);
+        my $value = $user_paramscall_object->$key;
+
+        if (not defined $param->{ required } or $param->{ required } == 0) {
+          next if (not defined $value);
+        } else {
+          CloudHealth::API::Error->throw(
+            type => 'InvalidParameters',
+            message => "$key is required"
+          ) if (not defined $value);
+        }
+
+        if (my $msg = $param->{ isa }->validate($value)) {
+          CloudHealth::API::Error->throw(
+            type => 'InvalidParameters',
+            message => $msg,
+          );
+        }
 
         my $location = defined $param->{ location } ? $param->{ location } : $key;
         $body_struct->{ $location } = $value;
@@ -158,55 +171,37 @@ package CloudHealth::API::Call::EnableAWSAccount;
   use MooX::StrictConstructor;
   use Types::Standard qw/Str Int Bool Dict Optional ArrayRef/;
 
-  has name => (is => 'ro', isa => Str);
-  has authentication => (
-    is => 'ro', required => 1,
-    isa => Dict[
+  our $authentication_cons = Dict[
       protocol => Str,
       access_key => Optional[Str],
       secret_key => Optional[Str],
       assume_role_arn => Optional[Str],
       assume_role_external_id => Optional[Str],
     ]
-  );
-  has billing => (is => 'ro', isa => Dict[bucket => Str]);
-  has cloudtrail => (
-    is => 'ro',
-    isa => Dict[
-      enabled => Bool,
-      bucket => Str,
-      prefix => Optional[Str]
-    ]
-  );
-  has aws_config => (
-    is => 'ro',
-    isa => Dict[
-      enabled => Bool,
-      bucket => Str,
-      prefix => Optional[Str]
-    ]
-  );
-  has cloudwatch => (
-    is => 'ro',
-    isa => Dict[enabled => Bool]
-  );
-  has tags => (
-    is => 'ro',
-    isa => ArrayRef[Dict[key => Str, value => Str]]
-  );
-  has hide_public_fields => (is => 'ro', isa => Bool);
-  has region => (is => 'ro', isa => Str);
+  our $billing_cons = Dict[bucket => Str];
+  our $cloudtrail_cons = Dict[
+    enabled => Bool,
+    bucket => Str,
+    prefix => Optional[Str]
+  ]
+  our $aws_config_cons = Dict[
+    enabled => Bool,
+    bucket => Str,
+    prefix => Optional[Str]
+  ]
+  our $cloudwatch_cons = Dict[enabled => Bool];
+  our $tags_cons = ArrayRef[Dict[key => Str, value => Str]];
 
   sub _body_params { [
-    { name => 'name' },
-    { name => 'authentication' },
-    { name => 'billing' },
-    { name => 'cloudtrail' },
-    { name => 'aws_config' },
-    { name => 'cloudwatch' },
-    { name => 'tags' },
-    { name => 'hide_public_fields' },
-    { name => 'region' },
+    { name => 'name', required => 1, isa => Str },
+    { name => 'authentication', required => 1, isa => $authentication_cons },
+    { name => 'billing', isa => $billing_cons },
+    { name => 'cloudtrail', isa => $cloudtrail_cons },
+    { name => 'aws_config', isa => $aws_config_cons },
+    { name => 'cloudwatch', isa => $cloudwatch_cons },
+    { name => 'tags', isa => $tags_cons },
+    { name => 'hide_public_fields', isa => Bool },
+    { name => 'region', isa => Str },
   ] }
   sub _query_params { [ ] }
   sub _url_params { [ ] }
@@ -214,273 +209,174 @@ package CloudHealth::API::Call::EnableAWSAccount;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts' }
 
 package CloudHealth::API::Call::AWSAccounts;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
 
-  has page => (is => 'ro', isa => Int);
-  has per_page => (is => 'ro', isa => Int);
-
   sub _query_params { [
-    { name => 'page' },
-    { name => 'per_page' },
+    { name => 'page', isa => Int },
+    { name => 'per_page', isa => Int },
   ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts' }
 
 package CloudHealth::API::Call::SingleAWSAccount;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
-
-  has id => (is => 'ro', isa => Int, required => 1);
 
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'id' },
+    { name => 'id', required => 1, isa => Int },
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id' }
 
 package CloudHealth::API::Call::UpdateExistingAWSAccount;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Str Int Bool Dict Optional ArrayRef/;
 
-  has id => (is => 'ro', isa => Str, required => 1);
-
-  has name => (is => 'ro', isa => Str);
-  has authentication => (
-    is => 'ro', required => 1,
-    isa => Dict[
+  our $authentication_cons = Dict[
       protocol => Str,
       access_key => Optional[Str],
       secret_key => Optional[Str],
       assume_role_arn => Optional[Str],
       assume_role_external_id => Optional[Str],
     ]
-  );
-  has billing => (is => 'ro', isa => Dict[bucket => Str]);
-  has cloudtrail => (
-    is => 'ro',
-    isa => Dict[
-      enabled => Bool,
-      bucket => Str,
-      prefix => Optional[Str]
-    ]
-  );
-  has aws_config => (
-    is => 'ro',
-    isa => Dict[
-      enabled => Bool,
-      bucket => Str,
-      prefix => Optional[Str]
-    ]
-  );
-  has cloudwatch => (
-    is => 'ro',
-    isa => Dict[enabled => Bool]
-  );
-  has tags => (
-    is => 'ro',
-    isa => ArrayRef[Dict[key => Str, value => Str]]
-  );
-  has hide_public_fields => (is => 'ro', isa => Bool);
-  has region => (is => 'ro', isa => Str);
+  our $billing_cons = Dict[bucket => Str];
+  our $cloudtrail_cons = Dict[
+    enabled => Bool,
+    bucket => Str,
+    prefix => Optional[Str]
+  ]
+  our $aws_config_cons = Dict[
+    enabled => Bool,
+    bucket => Str,
+    prefix => Optional[Str]
+  ]
+  our $cloudwatch_cons = Dict[enabled => Bool];
+  our $tags_cons = ArrayRef[Dict[key => Str, value => Str]];
 
   sub _body_params { [
-    { name => 'name' },
-    { name => 'authentication' },
-    { name => 'billing' },
-    { name => 'cloudtrail' },
-    { name => 'aws_config' },
-    { name => 'cloudwatch' },
-    { name => 'tags' },
-    { name => 'hide_public_fields' },
-    { name => 'region' },
+    { name => 'name', required => 1, isa => Str },
+    { name => 'authentication', required => 1, isa => $authentication_cons },
+    { name => 'billing', isa => $billing_cons },
+    { name => 'cloudtrail', isa => $cloudtrail_cons },
+    { name => 'aws_config', isa => $aws_config_cons },
+    { name => 'cloudwatch', isa => $cloudwatch_cons },
+    { name => 'tags', isa => $tags_cons },
+    { name => 'hide_public_fields', isa => Bool },
+    { name => 'region', isa => Str },
   ] }
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'id' },
+    { name => 'id', required => 1, isa => Str },
   ] }
   sub _method { 'PUT' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id' }
 
-
 package CloudHealth::API::Call::DeleteAWSAccount;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
-
-  has id => (is => 'ro', isa => Int, required => 1);
 
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'id' },
+    { name => 'id', required => 1, isa => Int },
   ] }
   sub _method { 'DELETE' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id' }
 
 package CloudHealth::API::Call::GetExternalID;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Str Int Bool/;
-
-  has id => (is => 'ro', isa => Str, required => 1);
 
   sub _query_params { [ ] }
   sub _url_params { [  
-    { name => 'id' }
+    { name => 'id', required => 1, isa => Str }
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id/generate_external_id' }
 
 package CloudHealth::API::Call::RetrieveAllPerspectives;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Str Int Bool/;
-
-  has active_only => (is => 'ro', isa => Bool);
+  use Types::Standard qw/Bool/;
 
   sub _query_params { [ 
-    { name => 'active_only' }
+    { name => 'active_only', isa => Bool }
   ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas' }
 
 package CloudHealth::API::Call::RetrievePerspectiveSchema;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Str Int Bool/;
-
-  has include_version => (is => 'ro', isa => Bool);
-  has perspective_id => (is => 'ro', isa => Str, required => 1);
+  use Types::Standard qw/Str Bool/;
 
   sub _query_params { [ 
-    { name => 'include_version' },
+    { name => 'include_version', isa => Bool },
   ] }
   sub _url_params { [ 
-    { name => 'perspective_id', location => 'perspective-id' }
+    { name => 'perspective_id', location => 'perspective-id', required => 1, isa => Str }
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
 
 package CloudHealth::API::Call::ListQueryableReports;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Str Int Bool/;
-
   sub _query_params { [ ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/olap_reports' }
 
 package CloudHealth::API::Call::ListReportsOfSpecificType;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Str Int Bool/;
-
-  has type => (is => 'ro', isa => Str, required => 1);
+  use Types::Standard qw/Str/;
 
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'type', location => 'report-type' }    
+    { name => 'type', location => 'report-type', required => 1, isa => Str }    
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/olap_reports/:report-type' }
 
 package CloudHealth::API::Call::ListOfQueryableAssets;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Str Int Bool/;
-
   sub _query_params { [ ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/api' }
 
 package CloudHealth::API::Call::AttributesOfSingleAsset;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Str Int Bool/;
-
-  has asset => (is => 'ro', isa => Str, required => 1);
+  use Types::Standard qw/Str/;
 
   sub _query_params { [ ] }
   sub _url_params { [ 
-    { name => 'asset' }
+    { name => 'asset', required => 1, isa => Str }
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/api/:asset' }
 
 package CloudHealth::API::Call::SearchForAssets;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Str Int Bool/;
 
-  has name => (is => 'ro', isa => Str, required => 1);
-  has query => (is => 'ro', isa => Str, required => 1);
-  has include => (is => 'ro', isa => Str);
-  has api_version => (is => 'ro', isa => Int, default => 2);
-  has fields => (is => 'ro', isa => Str);
-  has page => (is => 'ro', isa => Int);
-  has per_page => (is => 'ro', isa => Int);
-  has is_active => (is => 'ro', isa => Bool);
-
   sub _query_params { [
-    { name => 'name' },
-    { name => 'query' },
-    { name => 'include' },  
-    { name => 'api_version' },  
-    { name => 'fields' },  
-    { name => 'page' },  
-    { name => 'per_page' },  
-    { name => 'is_active' },  
+    { name => 'name', required => 1, isa => Str },
+    { name => 'query', required => 1, isa => Str },
+    { name => 'include', isa => Str },  
+    { name => 'api_version', isa => Int, default => 2 },  
+    { name => 'fields', isa => Str },  
+    { name => 'page', isa => Int },
+    { name => 'per_page', isa => Int },  
+    { name => 'is_active', isa => Bool },
   ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/api/search' }
 
 package CloudHealth::API::Call::MetricsForSingleAsset;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Str Int Bool/;
-
-  has asset => (is => 'ro', isa => Str, required => 1);
-  has granularity => (is => 'ro', isa => Str);
-  has from => (is => 'ro', isa => Str);
-  has to => (is => 'ro', isa => Str);
-  has time_range => (is => 'ro', isa => Str);
-  has page => (is => 'ro', isa => Int);
-  has per_page => (is => 'ro', isa => Int);
+  use Types::Standard qw/Str Int/;
 
   sub _query_params { [
-    { name => 'asset' },
-    { name => 'granularity' },
-    { name => 'from' },
-    { name => 'to' },
-    { name => 'time_range' },
-    { name => 'page' },
-    { name => 'per_page' },
+    { name => 'asset', required => 1, isa => Str },
+    { name => 'granularity', isa => Str },
+    { name => 'from', isa => Str },
+    { name => 'to', isa => Str },
+    { name => 'time_range', isa => Str },
+    { name => 'page', isa => Int },
+    { name => 'per_page', isa => Int },
   ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/metrics' }
-
-package CloudHealth::API::Call::UpdateTagsForSingleAsset;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/HashRef/;
-
-  has document => (is => 'ro', isa => HashRef, required => 1);
-
-  sub _query_params { [ ] }
-  sub _url_params { [ ] }
-  sub _method { 'POST' }
-  sub _url { 'https://chapi.cloudhealthtech.com/v1/custom_tags' }
-
 
 package CloudHealth::API::Caller;
   use Moo;
@@ -694,10 +590,7 @@ package CloudHealth::API;
 
   sub UploadMetricsForSingleAsset { die "TODO" }
 
-  sub UpdateTagsForSingleAsset {
-    my $self = shift;
-    $self->_invoke('UpdateTagsForSingleAsset', [ @_ ]);
-  }
+  sub UpdateTagsForSingleAsset { die "TODO" }
 
   sub SpecificCustomerReport { die "TODO" }
   sub AssetsForSpecificCustomer { die "TODO" }
