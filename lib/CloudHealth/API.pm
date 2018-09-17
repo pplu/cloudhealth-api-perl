@@ -192,6 +192,20 @@ package CloudHealth::API::Call::EnableAWSAccount;
   sub _method { 'POST' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts' }
 
+package CloudHealth::API::Call::DeleteAWSAccount;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Int/;
+
+  has id => (is => 'ro', isa => Int, required => 1);
+
+  sub _parameters { [ ] }
+  sub _url_params { [
+    { name => 'id' },
+  ] }
+  sub _method { 'DELETE' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_accounts/:id' }
+
 package CloudHealth::API::Call::RetrieveAllPerspectives;
   use Moo;
   use MooX::StrictConstructor;
@@ -357,7 +371,7 @@ package CloudHealth::API::Caller;
 
     return CloudHealth::Net::HTTPResponse->new(
        status => $res->{ status },
-       content => $res->{ content },
+       (defined $res->{ content })?( content => $res->{ content } ) : (),
     );
   }
 
@@ -370,10 +384,11 @@ package CloudHealth::API::ResultParser;
   sub result2return {
     my ($self, $response) = @_;
 
-    if ($response->status == 200) {
-      return $self->process_response($response);
-    } else {
+    if ($response->status >= 400) {
       return $self->process_error($response);
+    } else {
+      return 1 if (not defined $response->content);
+      return $self->process_response($response);
     } 
   }
 
@@ -465,7 +480,10 @@ package CloudHealth::API;
   sub AWSAccounts { die "TODO" }
   sub SingleAWSAccount { die "TODO" }
   sub UpdateExistingAWSAccount { die "TODO" }
-  sub DeleteAWSAccount { die "TODO" }
+  sub DeleteAWSAccount {
+    my $self = shift;
+    $self->_invoke('DeleteAWSAccount', [ @_ ]);
+  }
   sub GetExternalID { die "TODO" }
 
   sub RetrieveAllPerspectives {

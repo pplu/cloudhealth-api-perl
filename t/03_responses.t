@@ -21,6 +21,16 @@ my $res_processor = CloudHealth::API::ResultParser->new;
 }
 
 {
+  my $res = $res_processor->result2return(
+    CloudHealth::Net::HTTPResponse->new(
+      status => 204,
+    )
+  );
+
+  ok($res, 'An 204 HTTP response doesn\'t die');
+}
+
+{
   throws_ok(sub{
     $res_processor->result2return(
       CloudHealth::Net::HTTPResponse->new(
