@@ -3,13 +3,7 @@
 use CloudHealth::API;
 use Data::Dumper;
 
-my $key = $ARGV[0] or die "Usage: $0 api_key";
-
-my $ch = CloudHealth::API->new(
-  credentials => CloudHealth::API::Credentials->new(
-    api_key => $key,
-  ),
-);
+my $ch = CloudHealth::API->new;
 
 {
   my $res = $ch->SearchForAssets(

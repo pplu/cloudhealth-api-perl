@@ -38,7 +38,12 @@ package CloudHealth::API::Credentials;
   use Moo;
   use Types::Standard qw/Str/;
 
-  has api_key => (is => 'ro', isa => Str, required => 1);
+  has api_key => (
+    is => 'ro',
+    isa => Str,
+    required => 1,
+    default => sub { $ENV{ CLOUDHEALTH_APIKEY } }
+  );
 
 package CloudHealth::Net::HTTPRequest;
   use Moo;
@@ -335,9 +340,11 @@ package CloudHealth::API;
   has call_former => (is => 'ro', isa => HasMethods['params2request'], default => sub {
     CloudHealth::API::CallObjectFormer->new;  
   });
-  has credentials => (is => 'ro', isa => HasMethods['api_key'], required => 1);
+  has credentials => (is => 'ro', isa => HasMethods['api_key'], default => sub {
+    CloudHealth::API::Credentials->new;
+  });
   has io => (is => 'ro', isa => HasMethods['call'], default => sub {
-    CloudHealth::API::Caller->new;  
+    CloudHealth::API::Caller->new;
   });
   has result_parser => (is => 'ro', isa => HasMethods['result2return'], default => sub {
     CloudHealth::API::ResultParser->new
