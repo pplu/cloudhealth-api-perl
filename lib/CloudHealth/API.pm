@@ -357,7 +357,11 @@ package CloudHealth::API::Caller;
   use Moo;
   use HTTP::Tiny;
 
-  has ua => (is => 'ro', default => sub { HTTP::Tiny->new });
+  has ua => (is => 'ro', default => sub {
+    HTTP::Tiny->new(
+      agent => 'CloudHealth::API Perl Client ' . $CloudHealth::API::VERSION,
+    );
+  });
 
   sub call {
     my ($self, $req) = @_;
@@ -422,14 +426,25 @@ package CloudHealth::API::ResultParser;
       detail => $response->content,
     ) if ($@);
 
+    my $message;
+    if (defined $struct->{ error }) {
+      $message = $struct->{ error };
+    } elsif ($struct->{ errors } and ref($struct->{ errors }) eq 'ARRAY') {
+      $message = join ',', @{ $struct->{ errors } };
+    } else {
+      $message = 'No message';
+    }
+
     CloudHealth::API::RemoteError->throw(
       status => $response->status,
-      message => ($struct->{ error } // 'No message'),
+      message => $message,
     )
   }
 package CloudHealth::API;
   use Moo;
   use Types::Standard qw/HasMethods/;
+
+  our $VERSION = '0.01';
 
   has call_former => (is => 'ro', isa => HasMethods['params2request'], default => sub {
     CloudHealth::API::CallObjectFormer->new;  
