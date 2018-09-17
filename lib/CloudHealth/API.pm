@@ -357,6 +357,30 @@ package CloudHealth::API;
     return $self->result_parser->result2return($result);
   }
 
+  sub method_classification {
+    {
+      aws_accounts => [ qw/EnableAWSAccount AWSAccounts SingleAWSAccount 
+                           UpdateExistingAWSAccount DeleteAWSAccount GetExternalID/ ],
+      perspectives => [ qw/RetrieveAllPerspectives RetrievePerspectiveSchema CreatePerspectiveSchema
+                           UpdatePerspectiveSchema DeletePerspectiveSchema/ ],
+      reports      => [ qw/ListQueryableReports ListReportsOfSpecificType DataForStandardReport 
+                           DataForCustomReport ReportDimensionsAndMeasures/ ],
+      assets       => [ qw/ListOfQueryableAssets AttributesOfSingleAsset SearchForAssets/ ],
+      metrics      => [ qw/MetricsForSingleAsset UploadMetricsForSingleAsset/ ],
+      tags         => [ qw/UpdateTagsForSingleAsset/ ],
+      partner      => [ qw/SpecificCustomerReport AssetsForSpecificCustomer CreatePartnerCustomer 
+                           ModifyExistingCustomer DeleteExistingCustomer GetSingleCustomer GetAllCustomers
+                           StatementForSingleCustomer StatementsForAllCustomers
+                           CreateAWSAccountAssignment ReadAllAWSAccountAssignments 
+                           ReadSingleAWSAccountAssignment UpdateAWSAccountAssignment 
+                           DeleteAWSAccountAssignment/ ],
+      gov_cloud    => [ qw/ConnectGovCloudCommercialAccountToGovCloudAssetAccount
+                           ListAllGovCloudLinkagesOwnedByCurrentCustomer
+                           DetailsOfSingleGovCloudLinkage UpdateSingleGovCloudLinkage
+                           UnderstandFormatOfGovCloudLinkagePayload/ ],
+    }
+  }
+
   sub EnableAWSAccount { die "TODO" }
   sub AWSAccounts { die "TODO" }
   sub SingleAWSAccount { die "TODO" }
