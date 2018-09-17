@@ -13,7 +13,7 @@ my $classified_methods = {};
 # See that all the methods in method_classification are effectively declared
 # fill in classified_methods so we can later detect if there are methods in 
 # the API that have not been classified
-foreach my $kind (keys $ch->method_classification) {
+foreach my $kind (keys %{ $ch->method_classification }) {
   foreach my $method (@{ $ch->method_classification->{ $kind } }) {
     ok($ch->can($method), "Method $method is declared");
     $classified_methods->{ $method } = 1;
