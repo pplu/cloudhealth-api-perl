@@ -190,18 +190,18 @@ package CloudHealth::API::Call::EnableAWSAccount;
       secret_key => Optional[Str],
       assume_role_arn => Optional[Str],
       assume_role_external_id => Optional[Str],
-    ]
+    ];
   our $billing_cons = Dict[bucket => Str];
   our $cloudtrail_cons = Dict[
     enabled => Bool,
     bucket => Str,
     prefix => Optional[Str]
-  ]
+  ];
   our $aws_config_cons = Dict[
     enabled => Bool,
     bucket => Str,
     prefix => Optional[Str]
-  ]
+  ];
   our $cloudwatch_cons = Dict[enabled => Bool];
   our $tags_cons = ArrayRef[Dict[key => Str, value => Str]];
 
@@ -251,18 +251,18 @@ package CloudHealth::API::Call::UpdateExistingAWSAccount;
       secret_key => Optional[Str],
       assume_role_arn => Optional[Str],
       assume_role_external_id => Optional[Str],
-    ]
+    ];
   our $billing_cons = Dict[bucket => Str];
   our $cloudtrail_cons = Dict[
     enabled => Bool,
     bucket => Str,
     prefix => Optional[Str]
-  ]
+  ];
   our $aws_config_cons = Dict[
     enabled => Bool,
     bucket => Str,
     prefix => Optional[Str]
-  ]
+  ];
   our $cloudwatch_cons = Dict[enabled => Bool];
   our $tags_cons = ArrayRef[Dict[key => Str, value => Str]];
 
