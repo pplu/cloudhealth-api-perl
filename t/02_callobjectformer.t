@@ -59,7 +59,7 @@ my $former = CloudHealth::API::CallObjectFormer->new;
   throws_ok(sub {
     $former->params2request('EnableAWSAccount', $creds, [ name => 'test' ]);
   }, 'CloudHealth::API::Error');
-  like($@->detail, qr/Missing required arguments: authentication/);
+  cmp_ok($@->detail, 'eq', 'authentication is required');
 }
 
 {
