@@ -6,6 +6,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 use CloudHealth::API;
+use JSON::MaybeXS;
 
 my $creds = CloudHealth::API::Credentials->new(api_key => 'stub');
 my $former = CloudHealth::API::CallObjectFormer->new;
@@ -71,6 +72,34 @@ my $former = CloudHealth::API::CallObjectFormer->new;
   cmp_ok($req->headers->{'Content-Type'}, 'eq', 'application/json');
   cmp_ok($req->method, 'eq', 'POST');
   like($req->content, qr|"name":"test"|);
+}
+
+{
+  my $req = $former->params2request('UpdateTagsForSingleAsset', $creds, [
+    tag_groups => [
+      { asset_type => 'AwsAccount',
+        ids => [ 12345, 56789 ],
+        tags => [ { key => 'owner', value => 'Fred' } ],
+      },
+      { asset_type => 'AwsInstance',
+        ids => [ 1511831925873 ],
+        tags => [ { key => 'environment', value => 'Test' },
+                  { key => 'owner', value => 'Mary' },
+                ],
+      },
+      { asset_type => 'AwsRdsInstance',
+        ids => [ 206158446754 ],
+        tags => [ { key => 'environment', value => 'Production' },
+                  { key => 'owner', value => 'Mary' }
+                ]
+      },
+    ]
+  ]);
+
+  # This example JSON is from http://apidocs.cloudhealthtech.com/#tagging_how-tags-are-processed
+  my $json = '{"tag_groups":[{"asset_type":"AwsAccount","ids":[12345,56789],"tags":[{"key":"owner","value":"Fred"}]},{"asset_type": "AwsInstance","ids": [1511831925873],"tags": [{"key": "environment", "value": "Test"}, {"key": "owner", "value": "Mary"}]},{"asset_type": "AwsRdsInstance","ids": [206158446754],"tags": [{"key": "environment", "value": "Production"}, {"key": "owner", "value": "Mary"}]}]}';
+
+  is_deeply(decode_json($req->content), decode_json($json));
 }
 
 done_testing;
