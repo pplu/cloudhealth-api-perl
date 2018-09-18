@@ -572,7 +572,6 @@ package CloudHealth::API::Call::GetSingleCustomer;
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customers/:customer_id' }
 
-
 package CloudHealth::API::Call::GetAllCustomers;
   use Moo;
   use MooX::StrictConstructor;
@@ -582,6 +581,35 @@ package CloudHealth::API::Call::GetAllCustomers;
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customers' }
 
+package CloudHealth::API::Call::StatementForSingleCustomer;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Int/;
+
+  has id => (is => 'ro', isa => Int, required => 1);
+
+  sub _query_params { [ ] }
+  sub _url_params { [
+    { name => 'id' },  
+  ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/customer_statements/:id' }
+
+package CloudHealth::API::Call::StatementsForAllCustomers;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Int/;
+
+  has page => (is => 'ro', isa => Int);
+  has per_page => (is => 'ro', isa => Int);
+ 
+  sub _query_params { [
+    { name => 'page' },
+    { name => 'per_page' },  
+  ] }
+  sub _url_params { [ ] }
+  sub _method { 'GET' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/customer_statements' }
 
 package CloudHealth::API::Caller;
   use Moo;
@@ -822,8 +850,14 @@ package CloudHealth::API;
     my $self = shift;
     $self->_invoke('GetAllCustomers', [ @_ ]); 
   }
-  sub StatementForSingleCustomer { die "TODO" }
-  sub StatementsForAllCustomers { die "TODO" }
+  sub StatementForSingleCustomer {
+    my $self = shift;
+    $self->_invoke('StatementForSingleCustomer', [ @_ ]);
+  }
+  sub StatementsForAllCustomers {
+    my $self = shift;
+    $self->_invoke('StatementsForAllCustomers', [ @_ ]);
+  }
 
   sub ConnectGovCloudCommercialAccountToGovCloudAssetAccount { die "TODO" }
   sub ListAllGovCloudLinkagesOwnedByCurrentCustomer { die "TODO" }
