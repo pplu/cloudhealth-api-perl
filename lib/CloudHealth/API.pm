@@ -84,11 +84,24 @@ package CloudHealth::API::CallObjectFormer;
     "CloudHealth::API::Call::$call"
   }
 
+  sub call_metadata {
+    my ($self, $call) = @_;
+    my $call_class = $self->callinfo_class($call);
+    return {
+      query_params => $call_class->_query_params,
+      body_params => ($call_class->can('_body_params') ? $call_class->_body_params : undef),
+      url_params => $call_class->_url_params,
+      url => $call_class->_url,
+      method => $call_class->_method,
+    }
+  }
+
   sub params2request {
     my ($self, $call, $creds, $user_params) = @_;
     $user_params = { @$user_params };
 
-    my $call_class = $self->callinfo_class($call);
+    my $call_metadata = $self->call_metadata($call);
+
       #CloudHealth::API::Error->throw(
       #  type => 'InvalidParameters',
       #  message => "Error in parameters to method $call",
@@ -96,11 +109,11 @@ package CloudHealth::API::CallObjectFormer;
       #);
 
     my $body_struct;
-    if ($call_class->can('_body_params')) {
+    if (defined $call_metadata->{ body_params }) {
       $body_struct = {};
-      foreach my $param (@{ $call_class->_body_params }) {
+      foreach my $param (@{ $call_metadata->{ body_params } }) {
         my $key = $param->{ name };
-        my $value = $user_paramscall_object->$key;
+        my $value = $user_params->{ $key };
 
         if (not defined $param->{ required } or $param->{ required } == 0) {
           next if (not defined $value);
@@ -131,9 +144,9 @@ package CloudHealth::API::CallObjectFormer;
     my $params = {
       api_key => $creds->api_key,
     };
-    foreach my $param (@{ $call_object->_query_params }) {
+    foreach my $param (@{ $call_metadata->{ query_params } }) {
       my $key = $param->{ name };
-      my $value = $call_object->$key;
+      my $value = $user_params->{ $key };
       next if (not defined $value);
 
       my $location = defined $param->{ location } ? $param->{ location } : $key;
@@ -141,20 +154,20 @@ package CloudHealth::API::CallObjectFormer;
     }
 
     my $url_params = {};
-    foreach my $param (@{ $call_object->_url_params }) {
+    foreach my $param (@{ $call_metadata->{ url_params } }) {
       my $key = $param->{ name };
-      my $value = $call_object->$key;
+      my $value = $user_params->{ $key };
       next if (not defined $value);
 
       my $location = defined $param->{ location } ? $param->{ location } : $key;
       $url_params->{ $location } = $value;
     }
-    my $url = $call_object->_url;
+    my $url = $call_metadata->{ url };
     $url =~ s/\:([a-z0-9_-]+)/$url_params->{ $1 }/ge;
 
     my $qstring = HTTP::Tiny->www_form_urlencode($params);
     my $req = CloudHealth::Net::HTTPRequest->new;
-    $req->method($call_object->_method);
+    $req->method($call_metadata->{ method });
     $req->url(
       "$url?$qstring",
     );
