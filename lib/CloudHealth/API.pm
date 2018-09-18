@@ -367,6 +367,68 @@ package CloudHealth::API::Call::RetrievePerspectiveSchema;
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
 
+package CloudHealth::API::Call::CreatePerspectiveSchema;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Bool HashRef/;
+
+  has include_version => (is => 'ro', isa => Bool);
+  has schema => (is => 'ro', isa => HashRef, required => 1);
+
+  sub _body_params { [
+    { name => 'schema' },
+  ] }
+  sub _query_params { [ 
+    { name => 'include_version' },
+  ] }
+  sub _url_params { [ ] }
+  sub _method { 'POST' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/' }
+
+package CloudHealth::API::Call::UpdatePerspectiveSchema;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Bool HashRef Int/;
+
+  has perspective_id => (is => 'ro', isa => Int, required => 1);
+  has include_version => (is => 'ro', isa => Bool);
+  has schema => (is => 'ro', isa => HashRef, required => 1);
+  has allow_group_delete => (is => 'ro', isa => Bool);
+  has check_version => (is => 'ro', isa => Int);
+
+  sub _body_params { [
+    { name => 'schema' },
+  ] }
+  sub _query_params { [ 
+    { name => 'include_version' },
+    { name => 'check_version' },
+    { name => 'allow_group_delete' },
+  ] }
+  sub _url_params { [
+    { name => 'perspective_id', location => 'perspective-id' }, 
+  ] }
+  sub _method { 'PUT' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
+
+package CloudHealth::API::Call::DeletePerspectiveSchema;
+  use Moo;
+  use MooX::StrictConstructor;
+  use Types::Standard qw/Bool HashRef Int/;
+
+  has perspective_id => (is => 'ro', isa => Int, required => 1);
+  has hard_delete => (is => 'ro', isa => Bool);
+  has force => (is => 'ro', isa => Bool);
+
+  sub _query_params { [
+    { name => 'hard_delete' }, 
+    { name => 'force' }, 
+  ] }
+  sub _url_params { [
+    { name => 'perspective_id', location => 'perspective-id' }
+  ] }
+  sub _method { 'DELETE' }
+  sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
+
 package CloudHealth::API::Call::ListQueryableReports;
   use Moo;
   use MooX::StrictConstructor;
@@ -906,10 +968,18 @@ package CloudHealth::API;
     my $self = shift;
     $self->_invoke('RetrievePerspectiveSchema', [ @_ ]);
   }
-
-  sub CreatePerspectiveSchema { die "TODO" }
-  sub UpdatePerspectiveSchema { die "TODO" }
-  sub DeletePerspectiveSchema { die "TODO" }
+  sub CreatePerspectiveSchema {
+    my $self = shift;
+    $self->_invoke('CreatePerspectiveSchema', [ @_ ]);  
+  }
+  sub UpdatePerspectiveSchema {
+    my $self = shift;
+    $self->_invoke('UpdatePerspectiveSchema', [ @_ ]);   
+  }
+  sub DeletePerspectiveSchema {
+    my $self = shift;
+    $self->_invoke('DeletePerspectiveSchema', [ @_ ]);    
+  }
 
   sub ListQueryableReports {
     my $self = shift;
