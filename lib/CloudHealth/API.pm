@@ -96,59 +96,13 @@ package CloudHealth::API::CallObjectFormer;
     }
   }
 
-  sub params2request {
-    my ($self, $call, $creds, $user_params) = @_;
-    $user_params = { @$user_params };
+  sub validate_userparams {
+    my ($self, $call, $params_data, $user_params) = @_;
 
-    my $call_metadata = $self->call_metadata($call);
-
-      #CloudHealth::API::Error->throw(
-      #  type => 'InvalidParameters',
-      #  message => "Error in parameters to method $call",
-      #  detail => $msg,
-      #);
-
-    my $body_struct;
-    if (defined $call_metadata->{ body_params }) {
-      $body_struct = {};
-      foreach my $param (@{ $call_metadata->{ body_params } }) {
-        my $key = $param->{ name };
-        my $value = $user_params->{ $key };
-
-        if (not defined $param->{ required } or $param->{ required } == 0) {
-          next if (not defined $value);
-        } else {
-          CloudHealth::API::Error->throw(
-            type => 'InvalidParameters',
-            message => "Error in parameters to method $call",
-            detail => "$key is required"
-          ) if (not defined $value);
-        }
-
-        if (my $msg = $param->{ isa }->validate($value)) {
-          CloudHealth::API::Error->throw(
-            type => 'InvalidParameters',
-            message => "Error in parameters to method $call",
-            detail => $msg,
-          );
-        }
-
-        my $location = defined $param->{ location } ? $param->{ location } : $key;
-        $body_struct->{ $location } = $value;
-      }
-    }
-
-    CloudHealth::API::Error->throw(
-      type => 'NoCredentials',
-      message => 'Cannot find credentials for the request'
-    ) if (not $creds->is_set);
-
-    my $params = {
-      api_key => $creds->api_key,
-    };
-    foreach my $param (@{ $call_metadata->{ query_params } }) {
+    my $params = { };
+    foreach my $param (@$params_data) {
       my $key = $param->{ name };
-      my $value = $user_params->{ $key };
+      my $value = delete $user_params->{ $key };
 
       if (not defined $param->{ required } or $param->{ required } == 0) {
         next if (not defined $value);
@@ -171,33 +125,36 @@ package CloudHealth::API::CallObjectFormer;
       my $location = defined $param->{ location } ? $param->{ location } : $key;
       $params->{ $location } = $value;
     }
+    return $params;
+  }
 
-    my $url_params = {};
-    foreach my $param (@{ $call_metadata->{ url_params } }) {
-      my $key = $param->{ name };
-      my $value = $user_params->{ $key };
+  sub params2request {
+    my ($self, $call, $creds, $user_params) = @_;
+    $user_params = { @$user_params };
 
-      if (not defined $param->{ required } or $param->{ required } == 0) {
-        next if (not defined $value);
-      } else {
-        CloudHealth::API::Error->throw(
-          type => 'InvalidParameters',
-          message => "Error in parameters to method $call",
-          detail => "$key is required"
-        ) if (not defined $value);
-      }
+    my $call_metadata = $self->call_metadata($call);
 
-      if (my $msg = $param->{ isa }->validate($value)) {
-        CloudHealth::API::Error->throw(
-          type => 'InvalidParameters',
-          message => "Error in parameters to method $call",
-          detail => $msg,
-        );
-      }
+      #CloudHealth::API::Error->throw(
+      #  type => 'InvalidParameters',
+      #  message => "Error in parameters to method $call",
+      #  detail => $msg,
+      #);
 
-      my $location = defined $param->{ location } ? $param->{ location } : $key;
-      $url_params->{ $location } = $value;
+    my $body_struct;
+    if (defined $call_metadata->{ body_params }) {
+      $body_struct = $self->validate_userparams($call, $call_metadata->{ body_params }, $user_params);
     }
+
+    CloudHealth::API::Error->throw(
+      type => 'NoCredentials',
+      message => 'Cannot find credentials for the request'
+    ) if (not $creds->is_set);
+
+    my $params = $self->validate_userparams($call, $call_metadata->{ query_params }, $user_params);
+    $params->{ api_key } = $creds->api_key;
+
+    my $url_params = $self->validate_userparams($call, $call_metadata->{ url_params }, $user_params);
+
     my $url = $call_metadata->{ url };
     $url =~ s/\:([a-z0-9_-]+)/$url_params->{ $1 }/ge;
 
