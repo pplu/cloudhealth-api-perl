@@ -9,4 +9,5 @@ requires 'IO::Socket::SSL';
 on test => sub {
   requires 'Test::More';
   requires 'Test::Exception';
+  requires 'Ref::Util';
 };
