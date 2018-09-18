@@ -42,7 +42,7 @@ my $former = CloudHealth::API::CallObjectFormer->new;
     $former->params2request('RetrievePerspectiveSchema', $creds, [ perspective_id => 'x', unexistant => 'value' ]);
   }, 'CloudHealth::API::Error', 'RetrievePerspectiveSchema doesn\'t have that parameter');
   cmp_ok($@->message, 'eq', 'Error in parameters to method RetrievePerspectiveSchema');
-  like($@->detail, qr/Found unknown attribute/);
+  cmp_ok($@->detail, 'eq', 'Unknown parameter unexistant');
 }
 
 {

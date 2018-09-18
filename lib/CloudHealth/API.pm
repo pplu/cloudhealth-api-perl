@@ -134,12 +134,6 @@ package CloudHealth::API::CallObjectFormer;
 
     my $call_metadata = $self->call_metadata($call);
 
-      #CloudHealth::API::Error->throw(
-      #  type => 'InvalidParameters',
-      #  message => "Error in parameters to method $call",
-      #  detail => $msg,
-      #);
-
     my $body_struct;
     if (defined $call_metadata->{ body_params }) {
       $body_struct = $self->validate_userparams($call, $call_metadata->{ body_params }, $user_params);
@@ -154,6 +148,12 @@ package CloudHealth::API::CallObjectFormer;
     $params->{ api_key } = $creds->api_key;
 
     my $url_params = $self->validate_userparams($call, $call_metadata->{ url_params }, $user_params);
+
+    CloudHealth::API::Error->throw(
+      type => 'InvalidParameters',
+      message => "Error in parameters to method $call",
+      detail => 'Unknown parameter ' . (join ',', sort keys %$user_params)
+    ) if (keys %$user_params);
 
     my $url = $call_metadata->{ url };
     $url =~ s/\:([a-z0-9_-]+)/$url_params->{ $1 }/ge;
