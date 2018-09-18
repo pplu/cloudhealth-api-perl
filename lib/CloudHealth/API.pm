@@ -120,14 +120,16 @@ package CloudHealth::API::CallObjectFormer;
         } else {
           CloudHealth::API::Error->throw(
             type => 'InvalidParameters',
-            message => "$key is required"
+            message => "Error in parameters to method $call",
+            detail => "$key is required"
           ) if (not defined $value);
         }
 
         if (my $msg = $param->{ isa }->validate($value)) {
           CloudHealth::API::Error->throw(
             type => 'InvalidParameters',
-            message => $msg,
+            message => "Error in parameters to method $call",
+            detail => $msg,
           );
         }
 
@@ -147,7 +149,24 @@ package CloudHealth::API::CallObjectFormer;
     foreach my $param (@{ $call_metadata->{ query_params } }) {
       my $key = $param->{ name };
       my $value = $user_params->{ $key };
-      next if (not defined $value);
+
+      if (not defined $param->{ required } or $param->{ required } == 0) {
+        next if (not defined $value);
+      } else {
+        CloudHealth::API::Error->throw(
+          type => 'InvalidParameters',
+          message => "Error in parameters to method $call",
+          detail => "$key is required"
+        ) if (not defined $value);
+      }
+
+      if (my $msg = $param->{ isa }->validate($value)) {
+        CloudHealth::API::Error->throw(
+          type => 'InvalidParameters',
+          message => "Error in parameters to method $call",
+          detail => $msg,
+        );
+      }
 
       my $location = defined $param->{ location } ? $param->{ location } : $key;
       $params->{ $location } = $value;
@@ -157,7 +176,24 @@ package CloudHealth::API::CallObjectFormer;
     foreach my $param (@{ $call_metadata->{ url_params } }) {
       my $key = $param->{ name };
       my $value = $user_params->{ $key };
-      next if (not defined $value);
+
+      if (not defined $param->{ required } or $param->{ required } == 0) {
+        next if (not defined $value);
+      } else {
+        CloudHealth::API::Error->throw(
+          type => 'InvalidParameters',
+          message => "Error in parameters to method $call",
+          detail => "$key is required"
+        ) if (not defined $value);
+      }
+
+      if (my $msg = $param->{ isa }->validate($value)) {
+        CloudHealth::API::Error->throw(
+          type => 'InvalidParameters',
+          message => "Error in parameters to method $call",
+          detail => $msg,
+        );
+      }
 
       my $location = defined $param->{ location } ? $param->{ location } : $key;
       $url_params->{ $location } = $value;

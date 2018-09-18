@@ -23,7 +23,7 @@ my $former = CloudHealth::API::CallObjectFormer->new;
     $former->params2request('RetrievePerspectiveSchema', $creds, []);
   }, 'CloudHealth::API::Error', 'RetrievePerspectiveSchema call perspective_id parameter is required');
   cmp_ok($@->message, 'eq', 'Error in parameters to method RetrievePerspectiveSchema');
-  like($@->detail, qr/Missing required arguments/);
+  cmp_ok($@->detail, 'eq', 'perspective_id is required');
 }
 
 {
