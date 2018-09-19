@@ -23,20 +23,20 @@ foreach my $kind (keys %{ $ch->method_classification }) {
     }
     ok(is_plain_arrayref($metadata->{ query_params }), "query_params is an array for $method");
     foreach (@{ $metadata->{ query_params } }) {
-      ok(defined $_->{ name }); 
-      ok(defined $_->{ isa }); 
+      ok(defined $_->{ name }, "name defined in query_params for $method"); 
+      ok(defined $_->{ isa }, "isa defined in query_params for $method"); 
     }
     ok(is_plain_arrayref($metadata->{ url_params }), "url_params is an array for $method");
     foreach (@{ $metadata->{ url_params } }) {
-      ok(defined $_->{ name });
-      ok(defined $_->{ isa });
+      ok(defined $_->{ name }, "name defined in query_params for $method");
+      ok(defined $_->{ isa }, "isa defined in query_params for $method");
     }
 
     if (defined $metadata->{ body_params }) {
       ok(is_plain_arrayref($metadata->{ body_params }), "body_params is an array for $method");
       foreach (@{ $metadata->{ body_params } }) {
-        ok(defined $_->{ name });
-        ok(defined $_->{ isa });
+        ok(defined $_->{ name }, "name defined in query_params for $method");
+        ok(defined $_->{ isa }, "isa defined in query_params for $method");
       }
     }
 

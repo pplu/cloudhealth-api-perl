@@ -320,63 +320,44 @@ package CloudHealth::API::Call::RetrievePerspectiveSchema;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
 
 package CloudHealth::API::Call::CreatePerspectiveSchema;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Bool HashRef/;
 
-  has include_version => (is => 'ro', isa => Bool);
-  has schema => (is => 'ro', isa => HashRef, required => 1);
-
   sub _body_params { [
-    { name => 'schema' },
+    { name => 'schema', required => 1, isa => HashRef },
   ] }
   sub _query_params { [ 
-    { name => 'include_version' },
+    { name => 'include_version', isa => Bool },
   ] }
   sub _url_params { [ ] }
   sub _method { 'POST' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/' }
 
 package CloudHealth::API::Call::UpdatePerspectiveSchema;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Bool HashRef Int/;
 
-  has perspective_id => (is => 'ro', isa => Int, required => 1);
-  has include_version => (is => 'ro', isa => Bool);
-  has schema => (is => 'ro', isa => HashRef, required => 1);
-  has allow_group_delete => (is => 'ro', isa => Bool);
-  has check_version => (is => 'ro', isa => Int);
-
   sub _body_params { [
-    { name => 'schema' },
+    { name => 'schema', required => 1, isa => HashRef },
   ] }
   sub _query_params { [ 
-    { name => 'include_version' },
-    { name => 'check_version' },
-    { name => 'allow_group_delete' },
+    { name => 'include_version', isa => Bool },
+    { name => 'check_version', isa => Int },
+    { name => 'allow_group_delete', isa => Bool },
   ] }
   sub _url_params { [
-    { name => 'perspective_id', location => 'perspective-id' }, 
+    { name => 'perspective_id', location => 'perspective-id', isa => Int, required => 1 }, 
   ] }
   sub _method { 'PUT' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
 
 package CloudHealth::API::Call::DeletePerspectiveSchema;
-  use Moo;
-  use MooX::StrictConstructor;
-  use Types::Standard qw/Bool HashRef Int/;
-
-  has perspective_id => (is => 'ro', isa => Int, required => 1);
-  has hard_delete => (is => 'ro', isa => Bool);
-  has force => (is => 'ro', isa => Bool);
+  use Types::Standard qw/Bool Int/;
 
   sub _query_params { [
-    { name => 'hard_delete' }, 
-    { name => 'force' }, 
+    { name => 'hard_delete', isa => Bool }, 
+    { name => 'force', isa => Bool }, 
   ] }
   sub _url_params { [
-    { name => 'perspective_id', location => 'perspective-id' }
+    { name => 'perspective_id', location => 'perspective-id', required => 1, isa => Int }
   ] }
   sub _method { 'DELETE' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/perspective_schemas/:perspective-id' }
@@ -447,16 +428,13 @@ package CloudHealth::API::Call::MetricsForSingleAsset;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/metrics' }
 
 package CloudHealth::API::Call::UpdateTagsForSingleAsset;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Dict Str ArrayRef Int/;
 
   our $tags_cons = Dict[key => Str, value => Str];
   our $tag_group_cons = Dict[asset_type => Str, ids => ArrayRef[Int], tags => ArrayRef[$tags_cons]];
-  has tag_groups => (is => 'ro', isa => ArrayRef[$tag_group_cons], required => 1);
 
   sub _body_params { [
-    { name => 'tag_groups' },
+    { name => 'tag_groups', required => 1, isa => ArrayRef[$tag_group_cons] },
   ] }
   sub _query_params { [ ] }
   sub _url_params { [ ] }
@@ -464,63 +442,45 @@ package CloudHealth::API::Call::UpdateTagsForSingleAsset;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/custom_tags' }
 
 package CloudHealth::API::Call::SpecificCustomerReport;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int Str/;
 
-  has report_type => (is => 'ro', isa => Str, required => 1);
-  has report_id => (is => 'ro', isa => Str, required => 1);
-  has client_api_id => (is => 'ro', isa => Int, required => 1);
-
   sub _query_params { [
-    { name => 'client_api_id' },  
+    { name => 'client_api_id', required => 1, isa => Int },  
   ] }
   sub _url_params { [
-    { name => 'report_type', location => 'report-type' },
-    { name => 'report_id', location => 'report-id' },
+    { name => 'report_type', location => 'report-type', required => 1, isa => Str },
+    { name => 'report_id', location => 'report-id', required => 1, isa => Str },
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/olap_reports/:report-type/:report-id' }
 
 package CloudHealth::API::Call::AssetsForSpecificCustomer;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int Str/;
 
-  has client_api_id => (is => 'ro', isa => Int, required => 1);
-  has api_version => (is => 'ro', isa => Int, default => 2);
-  has name => (is => 'ro', isa => Str, required => 1);
-
   sub _query_params { [
-    { name => 'client_api_id' },  
-    { name => 'api_version' },  
-    { name => 'name' },  
+    { name => 'client_api_id', required => 1, isa => Int },  
+    { name => 'api_version', default => 2, isa => Int },  
+    { name => 'name', required => 1, isa => Str },  
   ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/api/search.json' }
 
 package CloudHealth::API::Call::CreatePartnerCustomer;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int Str Dict Maybe ArrayRef/;
 
-  has name => (is => 'ro', isa => Str, required => 1);
-  has address => (is => 'ro', isa => Dict[street1 => Str, street2 => Str, city => Str, state => Str, zipcode => Int, country => Str], required => 1);
-  has classification => (is => 'ro', isa => Str);
-  has trial_expiration_date => (is => 'ro', isa => Str);
-  has billing_contact => (is => 'ro', isa => Str);
-  has partner_billing_configuration => (is => 'ro', isa => Dict[enabled => Str, folder => Maybe[Str]]);
-  has tags => (is => 'ro', isa => ArrayRef[Dict[key => Str, value => Str]]);
+  our $address_con = Dict[street1 => Str, street2 => Str, city => Str, state => Str, zipcode => Int, country => Str];
+  our $partner_billing_configuration_con = Dict[enabled => Str, folder => Maybe[Str]];
+  our $tags_con = ArrayRef[Dict[key => Str, value => Str]];
 
   sub _body_params { [
-    { name => 'name' },
-    { name => 'address' },
-    { name => 'classification' },
-    { name => 'trial_expiration_date' },
-    { name => 'billing_contact' },
-    { name => 'partner_billing_configuration' },
-    { name => 'tags' },
+    { name => 'name', required => 1, isa => Str },
+    { name => 'address', required => 1, isa => $address_con },
+    { name => 'classification', isa => Str },
+    { name => 'trial_expiration_date', isa => Str },
+    { name => 'billing_contact', isa => Str },
+    { name => 'partner_billing_configuration', isa => $partner_billing_configuration_con },
+    { name => 'tags', isa => $tags_con },
   ] }
   sub _query_params { [ ] }
   sub _url_params { [ ] }
@@ -528,67 +488,49 @@ package CloudHealth::API::Call::CreatePartnerCustomer;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customers' }
 
 package CloudHealth::API::Call::ModifyExistingCustomer;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int Str Dict Maybe ArrayRef/;
 
-  has customer_id => (is => 'ro', isa => Int, required => 1);
-
-  has name => (is => 'ro', isa => Str);
-  has address => (is => 'ro', isa => Dict[street1 => Str, street2 => Str, city => Str, state => Str, zipcode => Int, country => Str]);
-  has classification => (is => 'ro', isa => Str);
-  has trial_expiration_date => (is => 'ro', isa => Str);
-  has billing_contact => (is => 'ro', isa => Str);
-  has partner_billing_configuration => (is => 'ro', isa => Dict[enabled => Str, folder => Maybe[Str]]);
-  has tags => (is => 'ro', isa => ArrayRef[Dict[key => Str, value => Str]]);
+  our $address_con = Dict[street1 => Str, street2 => Str, city => Str, state => Str, zipcode => Int, country => Str];
+  our $partner_billing_configuration_con = Dict[enabled => Str, folder => Maybe[Str]];
+  our $tags_con = ArrayRef[Dict[key => Str, value => Str]];
 
   sub _body_params { [
-    { name => 'name' },
-    { name => 'address' },
-    { name => 'classification' },
-    { name => 'trial_expiration_date' },
-    { name => 'billing_contact' },
-    { name => 'partner_billing_configuration' },
-    { name => 'tags' },
+    { name => 'name', isa => Str },
+    { name => 'address', isa => $address_con },
+    { name => 'classification', isa => Str },
+    { name => 'trial_expiration_date', isa => Str },
+    { name => 'billing_contact', isa => Str },
+    { name => 'partner_billing_configuration', isa => $partner_billing_configuration_con },
+    { name => 'tags', isa => $tags_con },
   ] }
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'customer_id' }, 
+    { name => 'customer_id', required => 1, isa => Str }, 
   ] }
   sub _method { 'PUT' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customers/:customer_id' }
 
 package CloudHealth::API::Call::DeleteExistingCustomer;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
-
-  has customer_id => (is => 'ro', isa => Int, required => 1);
 
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'customer_id' },
+    { name => 'customer_id', required => 1, isa => Int },
   ] }
   sub _method { 'DELETE' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customers/:customer_id' }
 
 package CloudHealth::API::Call::GetSingleCustomer;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
-
-  has customer_id => (is => 'ro', isa => Int, required => 1);
 
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'customer_id' },
+    { name => 'customer_id', required => 1, isa => Int },
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customers/:customer_id' }
 
 package CloudHealth::API::Call::GetAllCustomers;
-  use Moo;
-  use MooX::StrictConstructor;
 
   sub _query_params { [ ] }
   sub _url_params { [ ] }
@@ -596,49 +538,34 @@ package CloudHealth::API::Call::GetAllCustomers;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customers' }
 
 package CloudHealth::API::Call::StatementForSingleCustomer;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
-
-  has id => (is => 'ro', isa => Int, required => 1);
 
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'id' },  
+    { name => 'id', required => 1, isa => Int },
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customer_statements/:id' }
 
 package CloudHealth::API::Call::StatementsForAllCustomers;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
 
-  has page => (is => 'ro', isa => Int);
-  has per_page => (is => 'ro', isa => Int);
- 
   sub _query_params { [
-    { name => 'page' },
-    { name => 'per_page' },  
+    { name => 'page', isa => Int },
+    { name => 'per_page', isa => Int },  
   ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/customer_statements' }
 
 package CloudHealth::API::Call::CreateAWSAccountAssignment;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Str Int/;
-
-  has owner_id => (is => 'ro', isa => Str, required => 1);
-  has customer_id => (is => 'ro', isa => Int, required => 1);
-  has payer_account_owner_id => (is => 'ro', isa => Str, required => 1);
 
   sub _body_params {
     [
-      { name => 'owner_id' },
-      { name => 'customer_id' },
-      { name => 'payer_account_owner_id' },
+      { name => 'owner_id', required => 1, isa => Str },
+      { name => 'customer_id', required => 1, isa => Int },
+      { name => 'payer_account_owner_id', required => 1, isa => Str },
     ]
   }
   sub _query_params { [ ] }
@@ -647,67 +574,47 @@ package CloudHealth::API::Call::CreateAWSAccountAssignment;
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_account_assignments' }
 
 package CloudHealth::API::Call::ReadAllAWSAccountAssignments;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
 
-  has page => (is => 'ro', isa => Int);
-  has per_page => (is => 'ro', isa => Int);
- 
   sub _query_params { [
-    { name => 'page' },
-    { name => 'per_page' },  
+    { name => 'page', isa => Int },
+    { name => 'per_page', isa => Int },  
   ] }
   sub _url_params { [ ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_account_assignments' }
 
 package CloudHealth::API::Call::ReadSingleAWSAccountAssignment;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
   
-  has id => (is => 'ro', isa => Int, required => 1);
-
   sub _query_params { [ ] }
   sub _url_params { [
-    { name => 'id' }  
+    { name => 'id', required => 1, isa => Int }  
   ] }
   sub _method { 'GET' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_account_assignments/:id' }
 
 package CloudHealth::API::Call::UpdateAWSAccountAssignment;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Str Int/;
 
-  has id => (is => 'ro', isa => Int, required => 1);
-  has owner_id => (is => 'ro', isa => Str, required => 1);
-  has customer_id => (is => 'ro', isa => Int, required => 1);
-  has payer_account_owner_id => (is => 'ro', isa => Str, required => 1);
-
   sub _body_params { [
-    { name => 'owner_id' },
-    { name => 'customer_id' },
-    { name => 'payer_account_owner_id' },
+    { name => 'owner_id', required => 1, isa => Str },
+    { name => 'customer_id', required => 1, isa => Int },
+    { name => 'payer_account_owner_id', required => 1, isa => Str },
   ] }
   sub _query_params { [ ] }
   sub _url_params { [ 
-    { name => 'id' },
+    { name => 'id', required => 1, isa => Int },
   ] }
   sub _method { 'PUT' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_account_assignments/:id' }
 
 package CloudHealth::API::Call::DeleteAWSAccountAssignment;
-  use Moo;
-  use MooX::StrictConstructor;
   use Types::Standard qw/Int/;
-
-  has id => (is => 'ro', isa => Int, required => 1);
 
   sub _query_params { [ ] }
   sub _url_params { [ 
-    { name => 'id' },
+    { name => 'id', required => 1, isa => Int },
   ] }
   sub _method { 'DELETE' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_account_assignments/:id' }
