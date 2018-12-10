@@ -659,34 +659,6 @@ package CloudHealth::API::Call::DeleteAWSAccountAssignment;
   sub _method { 'DELETE' }
   sub _url { 'https://chapi.cloudhealthtech.com/v1/aws_account_assignments/:id' }
 
-package CloudHealth::API::Caller;
-  use Moo;
-  use HTTP::Tiny;
-
-  has ua => (is => 'ro', default => sub {
-    HTTP::Tiny->new(
-      agent => 'CloudHealth::API Perl Client ' . $CloudHealth::API::VERSION,
-    );
-  });
-
-  sub call {
-    my ($self, $req) = @_;
-
-    my $res = $self->ua->request(
-      $req->method,
-      $req->url,
-      {
-        headers => $req->headers,
-        (defined $req->content) ? (content => $req->content) : (),
-      }
-    );
-
-    return CloudHealth::Net::HTTPResponse->new(
-       status => $res->{ status },
-       (defined $res->{ content })?( content => $res->{ content } ) : (),
-    );
-  }
-
 package CloudHealth::API::ResultParser;
   use Moo;
   use JSON::MaybeXS;
@@ -762,6 +734,7 @@ package CloudHealth::API;
     CloudHealth::API::Credentials->new;
   });
   has io => (is => 'ro', isa => HasMethods['call'], default => sub {
+    require CloudHealth::API::Caller;
     CloudHealth::API::Caller->new;
   });
   has result_parser => (is => 'ro', isa => HasMethods['result2return'], default => sub {
