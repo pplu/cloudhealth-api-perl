@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 use CloudHealth::API;
+use CloudHealth::API::Credentials;
 
 my $ch = CloudHealth::API->new(
   credentials => CloudHealth::API::Credentials->new(api_key => 'stub')
