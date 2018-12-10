@@ -205,3 +205,67 @@ package CloudHealth::API;
   }
 
 1;
+### main pod documentation begin ###
+
+=encoding UTF-8
+ 
+=head1 NAME
+ 
+CloudHealth::API - A REST API Client for the CloudHealth API
+
+=head1 SYNOPSIS
+ 
+  use CloudHealth::API;
+  my $ch = CloudHealth::API->new;
+  
+  my $res = $ch->MetricsForSingleAsset(
+    asset => $asset,
+  );
+  print Dumper($res);
+ 
+=head1 DESCRIPTION
+
+This module implements the CloudHealth REST API found in L<https://apidocs.cloudhealthtech.com/>
+
+=head1 AUTHENTICATION
+
+As the documentation states, you need an API KEY to query the API. The default authentication
+mechanism expects to find that API key in the C<CLOUDHEALTH_APIKEY> environment variable.
+
+You can also pass any object that implements an C<api_key> method to the C<credentials> attribute
+of the constructor
+
+=head1 RESULTS
+
+Results are returned as a Perl HashRef representing the JSON returned by the API.
+
+=head1 METHODS
+
+Each method on the client corresponds to an API action. You can find a class
+
+=head1 SEE ALSO
+
+L<https://apidocs.cloudhealthtech.com/>
+
+There is a CLI wrapper available as a CPAN module: L<App::CloudHealth>
+
+=head1 AUTHOR
+
+    Jose Luis Martinez
+    CPAN ID: JLMARTIN
+    CAPSiDE
+    jlmartinez@capside.com
+
+=head1 BUGS and SOURCE
+ 
+The source code is located here: L<https://github.com/pplu/cloudhealth-api-perl/>
+ 
+Please report bugs to: L<https://github.com/pplu/cloudhealth-api-perl/issues>
+ 
+=head1 COPYRIGHT and LICENSE
+ 
+Copyright (c) 2018 by Jose Luis Martinez Torres
+ 
+This code is distributed under the Apache 2 License. The full text of the license can be found in the LICENSE file included with this module.
+
+=cut
