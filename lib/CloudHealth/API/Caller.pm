@@ -1,6 +1,7 @@
 package CloudHealth::API::Caller;
   use Moo;
   use HTTP::Tiny;
+  use CloudHealth::API::HTTPResponse;
 
   has ua => (is => 'ro', default => sub {
     HTTP::Tiny->new(
@@ -20,7 +21,7 @@ package CloudHealth::API::Caller;
       }
     );
 
-    return CloudHealth::Net::HTTPResponse->new(
+    return CloudHealth::API::HTTPResponse->new(
        status => $res->{ status },
        (defined $res->{ content })?( content => $res->{ content } ) : (),
     );
