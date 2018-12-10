@@ -2,13 +2,16 @@ package CloudHealth::API::CallObjectFormer;
   use Moo;
   use HTTP::Tiny;
   use JSON::MaybeXS;
+  use Module::Runtime qw/require_module/;
   use CloudHealth::API::Error;
 
   has _json => (is => 'ro', default => sub { JSON::MaybeXS->new });
 
   sub callinfo_class {
     my ($self, $call) = @_;
-    "CloudHealth::API::Call::$call"
+    my $class = "CloudHealth::API::Call::$call";
+    require_module $class;
+    return $class;
   }
 
   sub params2request {
