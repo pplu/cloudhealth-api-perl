@@ -6,6 +6,7 @@ use warnings;
 use Test::More;
 use Test::Exception;
 use CloudHealth::API;
+use CloudHealth::API::ResultParser;
 
 my $res_processor = CloudHealth::API::ResultParser->new;
 
