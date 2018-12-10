@@ -7,6 +7,7 @@ use Test::More;
 use Test::Exception;
 use CloudHealth::API;
 use CloudHealth::API::Credentials;
+use CloudHealth::API::CallObjectFormer;
 use JSON::MaybeXS;
 
 my $creds = CloudHealth::API::Credentials->new(api_key => 'stub');
