@@ -4,6 +4,7 @@ package CloudHealth::API::CallObjectFormer;
   use JSON::MaybeXS;
   use Module::Runtime qw/require_module/;
   use CloudHealth::API::Error;
+  use CloudHealth::API::HTTPRequest;
 
   has _json => (is => 'ro', default => sub { JSON::MaybeXS->new });
 
@@ -70,7 +71,7 @@ package CloudHealth::API::CallObjectFormer;
     $url =~ s/\:([a-z0-9_-]+)/$url_params->{ $1 }/ge;
 
     my $qstring = HTTP::Tiny->www_form_urlencode($params);
-    my $req = CloudHealth::Net::HTTPRequest->new;
+    my $req = CloudHealth::API::HTTPRequest->new;
     $req->method($call_object->_method);
     $req->url(
       "$url?$qstring",

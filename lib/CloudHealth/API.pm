@@ -1,20 +1,3 @@
-package CloudHealth::Net::HTTPRequest;
-  use Moo;
-  use Types::Standard qw/Str HashRef/;
-
-  has method => (is => 'rw', isa => Str);
-  has url => (is => 'rw', isa => Str);
-  has headers => (is => 'rw', isa => HashRef);
-  has parameters => (is => 'rw', isa => HashRef);
-  has content => (is => 'rw', isa => Str);
-
-package CloudHealth::Net::HTTPResponse;
-  use Moo;
-  use Types::Standard qw/Str Int/;
-
-  has content => (is => 'ro', isa => Str);
-  has status => (is => 'ro', isa => Int);
-
 package CloudHealth::API;
   use Moo;
   use Types::Standard qw/HasMethods/;

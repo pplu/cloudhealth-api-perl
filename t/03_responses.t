@@ -7,12 +7,13 @@ use Test::More;
 use Test::Exception;
 use CloudHealth::API;
 use CloudHealth::API::ResultParser;
+use CloudHealth::API::HTTPResponse;
 
 my $res_processor = CloudHealth::API::ResultParser->new;
 
 {
   my $res = $res_processor->result2return(
-    CloudHealth::Net::HTTPResponse->new(
+    CloudHealth::API::HTTPResponse->new(
       status => 200,
       content => '{}'
     )
@@ -23,7 +24,7 @@ my $res_processor = CloudHealth::API::ResultParser->new;
 
 {
   my $res = $res_processor->result2return(
-    CloudHealth::Net::HTTPResponse->new(
+    CloudHealth::API::HTTPResponse->new(
       status => 204,
     )
   );
@@ -34,7 +35,7 @@ my $res_processor = CloudHealth::API::ResultParser->new;
 {
   throws_ok(sub{
     $res_processor->result2return(
-      CloudHealth::Net::HTTPResponse->new(
+      CloudHealth::API::HTTPResponse->new(
         status => 200,
         content => '{"malformed_json":}'
       )
@@ -48,7 +49,7 @@ my $res_processor = CloudHealth::API::ResultParser->new;
 {
   throws_ok(sub{
     $res_processor->result2return(
-      CloudHealth::Net::HTTPResponse->new(
+      CloudHealth::API::HTTPResponse->new(
         status => 401,
         content => '{"error":"You need to sign in or sign up before continuing"}'
       )
@@ -61,7 +62,7 @@ my $res_processor = CloudHealth::API::ResultParser->new;
 {
   throws_ok(sub{
     $res_processor->result2return(
-      CloudHealth::Net::HTTPResponse->new(
+      CloudHealth::API::HTTPResponse->new(
         status => 401,
         content => '{"error":"You need to sign in or sign up before continuing"}'
       )
@@ -75,7 +76,7 @@ my $res_processor = CloudHealth::API::ResultParser->new;
 {
   throws_ok(sub{
     $res_processor->result2return(
-      CloudHealth::Net::HTTPResponse->new(
+      CloudHealth::API::HTTPResponse->new(
         status => 403,
         content => '{}'
       )
@@ -88,7 +89,7 @@ my $res_processor = CloudHealth::API::ResultParser->new;
 {
   throws_ok(sub{
     $res_processor->result2return(
-      CloudHealth::Net::HTTPResponse->new(
+      CloudHealth::API::HTTPResponse->new(
         status => 422,
         content => '{"errors":["Name can\'t be blank"," access key can\'t be blank"," secret key can\'t be blank"]}'
       )
