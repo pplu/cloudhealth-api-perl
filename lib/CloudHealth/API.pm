@@ -227,6 +227,87 @@ CloudHealth::API - A REST API Client for the CloudHealth API
 
 This module implements the CloudHealth REST API found in L<https://apidocs.cloudhealthtech.com/>
 
+=head1 METHODS
+
+Each method on the client corresponds to an API action. You can find a class in the 
+C<CloudHealth::API::Call> namespace that describes the parameters that the method call accepts:
+
+L<CloudHealth::API::Call::EnableAWSAccount>
+
+  $ch->EnableAWSAccount(authentication => { protocol => '..' }, ...);
+
+L<CloudHealth::API::Call::AWSAccounts>
+
+  $ch->AWSAccounts;
+
+L<CloudHealth::API::Call::SingleAWSAccount>
+
+  $ch->SingleAWSAccount(id => $id);
+
+L<CloudHealth::API::Call::UpdateExistingAWSAccount>
+
+  $ch->UpdateExistingAWSAccount(id => $id, authentication => { protocol => '..' }, ...);
+
+L<CloudHealth::API::Call::GetExternalID>
+
+  $ch->GetExternalID(id => $id)
+
+L<CloudHealth::API::Call::MetricsForSingleAsset>
+
+  $ch->MetricsForSingleAsset(asset => $id, from => '...', to => '...');
+
+L<CloudHealth::API::Call::DeleteAWSAccount>
+
+L<CloudHealth::API::Call::RetrieveAllPerspectives>
+
+L<CloudHealth::API::Call::RetrievePerspectiveSchema>
+
+L<CloudHealth::API::Call::CreatePerspectiveSchema>
+
+L<CloudHealth::API::Call::UpdatePerspectiveSchema>
+
+L<CloudHealth::API::Call::DeletePerspectiveSchema>
+
+L<CloudHealth::API::Call::ListQueryableReports>
+
+L<CloudHealth::API::Call::ListReportsOfSpecificType>
+
+L<CloudHealth::API::Call::ListOfQueryableAssets>
+
+L<CloudHealth::API::Call::AttributesOfSingleAsset>
+
+L<CloudHealth::API::Call::SearchForAssets>
+
+L<CloudHealth::API::Call::UpdateTagsForSingleAsset>
+
+L<CloudHealth::API::Call::SpecificCustomerReport>
+
+L<CloudHealth::API::Call::AssetsForSpecificCustomer>
+
+L<CloudHealth::API::Call::CreatePartnerCustomer>
+
+L<CloudHealth::API::Call::ModifyExistingCustomer>
+
+L<CloudHealth::API::Call::DeleteExistingCustomer>
+
+L<CloudHealth::API::Call::GetSingleCustomer>
+
+L<CloudHealth::API::Call::GetAllCustomers>
+
+L<CloudHealth::API::Call::StatementForSingleCustomer>
+
+L<CloudHealth::API::Call::StatementsForAllCustomers>
+
+L<CloudHealth::API::Call::CreateAWSAccountAssignment>
+
+L<CloudHealth::API::Call::ReadAllAWSAccountAssignments>
+
+L<CloudHealth::API::Call::ReadSingleAWSAccountAssignment>
+
+L<CloudHealth::API::Call::UpdateAWSAccountAssignment>
+
+L<CloudHealth::API::Call::DeleteAWSAccountAssignment>
+
 =head1 AUTHENTICATION
 
 As the documentation states, you need an API KEY to query the API. The default authentication
@@ -238,10 +319,6 @@ of the constructor
 =head1 RESULTS
 
 Results are returned as a Perl HashRef representing the JSON returned by the API.
-
-=head1 METHODS
-
-Each method on the client corresponds to an API action. You can find a class
 
 =head1 SEE ALSO
 
