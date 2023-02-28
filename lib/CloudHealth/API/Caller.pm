@@ -5,6 +5,7 @@ package CloudHealth::API::Caller;
 
   has ua => (is => 'ro', default => sub {
     HTTP::Tiny->new(
+      verify_SSL => 1,
       agent => 'CloudHealth::API Perl Client ' . $CloudHealth::API::VERSION,
     );
   });
